@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    entrypoint: /bin/ash
+    stdin_open: true
+    tty: true
+    expose:
+      - "3000"
+    environment:
+      - VIRTUAL_HOST=eml.localhost
+      - VIRTUAL_PORT=3000
+    volumes:
+      - ./app:/app
+
+networks:
+  default:
+    external:
+      name: nginx-proxy
