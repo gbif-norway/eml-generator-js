@@ -59,10 +59,34 @@ const App = () => {
     setDisplayDataAsString(JSON.stringify(jsonformsData, null, 2));
   }, [jsonformsData]);
 
+
+  const getPopulatedEmlTemplate = () => {
+    console.log(jsonformsData)
+    //console.log(xmlDoc.getElementsByTagName("title"));
+
+    //var nodes = emlDoc.evaluate('//eml/dataset/title', emlDoc, null, XPathResult.ANY_TYPE, null);
+    /*var node = nodes.iterateNext();
+    if (node) {
+      node.nodeValue = jsonformsData['title'] || '';
+      console.log(node.nodeValue);
+      console.log('what');
+    }*/
+
+    const parser = new DOMParser();
+    var emlDoc = parser.parseFromString(emlTemplate, "text/xml");
+    var node = emlDoc.querySelector('eml>dataset>title');
+    if (node) {
+      node.innerHTML = jsonformsData['title'] || '';
+      //node.setAttribute('attributelabel', 'attributevalue');
+    }
+    var XMLS = new XMLSerializer();
+    var inp_xmls = XMLS.serializeToString(emlDoc);
+    return inp_xmls;
+  }
+
   const downloadEML = () => {
-    console.log(emlTemplate);
     const element = document.createElement("a");
-    const file = new Blob([emlTemplate], {type: 'text/plain'});
+    const file = new Blob([getPopulatedEmlTemplate()], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
     element.download = "eml.xml";
     document.body.appendChild(element); // Required for this to work in FireFox
