@@ -1,32 +1,74 @@
 {
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string",
-      "minLength": 1
-    },
-    "description": {
-      "title": "Long Description",
+    "title": {
       "type": "string"
     },
-    "done": {
-      "type": "boolean"
-    },
-    "due_date": {
+    "abstract": {
       "type": "string",
-      "format": "date"
+      "title": "Description",
+      "description": "A brief overview of the resource that is being documented broken into paragraphs."
     },
-    "rating": {
-      "type": "integer",
-      "maximum": 5
-    },
-    "recurrence": {
-      "type": "string",
-      "enum": ["Never", "Daily", "Weekly", "Monthly"]
-    },
-    "recurrence_interval": {
-      "type": "integer"
+    "creator": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "electronicMailAddress": {
+            "title": "Email",
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "positionName": {
+            "type": "string"
+          },
+          "organizationName": {
+            "type": "string"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "deliveryPoint": {
+                "type": "string",
+                "title": "Address"
+              },
+              "city": {
+                "type": "string"
+              },
+              "administrativeArea": {
+                "type": "string",
+                "title": "State/Province"
+              },
+              "country": {
+                "type": "string",
+                "description": "Countries, territories, and islands are based on the ISO 3166-1 standard."
+              },
+              "postalCode": {
+                "type": "string"
+              }
+            }
+          },
+          "onlineUrl": {
+            "type": "string",
+            "title": "Home Page"
+          },
+          "userId__directory": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
-  "required": ["name", "due_date"]
+  "required": ["title", "abstract"]
 }

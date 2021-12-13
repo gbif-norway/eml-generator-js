@@ -41,13 +41,7 @@ const useStyles = makeStyles((_theme) => ({
   },
 }));
 
-const initialData = {
-  name: 'Send email to Adrian',
-  description: 'Confirm if you have passed the subject\nHereby ...',
-  done: true,
-  recurrence: 'Daily',
-  rating: 3,
-};
+const initialData = {};
 
 const renderers = [
   ...materialRenderers,
@@ -72,9 +66,8 @@ const App = () => {
     <Fragment>
       <div className='App'>
         <header className='App-header'>
-          <img src={logo} className='App-logo' alt='logo' />
-          <h1 className='App-title'>Welcome to JSON Forms with React</h1>
-          <p className='App-intro'>More Forms. Less Code.</p>
+          <h1 className='App-title'>EML generator</h1>
+          <p className='App-intro'>Fill in metadata in english. More detail = better findability = more citations.</p>
         </header>
       </div>
 
@@ -84,23 +77,7 @@ const App = () => {
         spacing={1}
         className={classes.container}
       >
-        <Grid item sm={6}>
-          <Typography variant={'h3'} className={classes.title}>
-            Bound data
-          </Typography>
-          <div className={classes.dataContent}>
-            <pre id='boundData'>{displayDataAsString}</pre>
-          </div>
-          <Button
-            className={classes.resetButton}
-            onClick={clearData}
-            color='primary'
-            variant='contained'
-          >
-            Clear data
-          </Button>
-        </Grid>
-        <Grid item sm={6}>
+        <Grid item sm={12}>
           <Typography variant={'h3'} className={classes.title}>
             Rendered form
           </Typography>
