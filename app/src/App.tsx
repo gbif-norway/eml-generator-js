@@ -14,6 +14,7 @@ import {
 import RatingControl from './RatingControl';
 import ratingControlTester from './ratingControlTester';
 import { makeStyles } from '@material-ui/core/styles';
+import emlTemplate from './eml-blank.xml.js';
 
 const useStyles = makeStyles((_theme) => ({
   container: {
@@ -58,8 +59,14 @@ const App = () => {
     setDisplayDataAsString(JSON.stringify(jsonformsData, null, 2));
   }, [jsonformsData]);
 
-  const clearData = () => {
-    setJsonformsData({});
+  const downloadEML = () => {
+    console.log(emlTemplate);
+    const element = document.createElement("a");
+    const file = new Blob([emlTemplate], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = "eml.xml";
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
   };
 
   return (
@@ -77,7 +84,7 @@ const App = () => {
         spacing={1}
         className={classes.container}
       >
-        <Grid item sm={12}>
+        <Grid item sm={11}>
           <Typography variant={'h3'} className={classes.title}>
             Rendered form
           </Typography>
@@ -91,6 +98,16 @@ const App = () => {
               onChange={({ errors, data }) => setJsonformsData(data)}
             />
           </div>
+        </Grid>
+        <Grid item sm={1}>
+          <Button
+            className={classes.resetButton}
+            onClick={downloadEML}
+            color='primary'
+            variant='contained'
+          >
+            Download EML
+          </Button>
         </Grid>
       </Grid>
     </Fragment>
