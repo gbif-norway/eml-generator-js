@@ -70,22 +70,22 @@ const App = () => {
 
       if (node && datasetNode) {
         if (Array.isArray(fieldValue)) {
+          // There may be multiple e.g. creator nodes in the eml. The blank template
+          // has 1 single example for each of these. So we keep an empty clone
+          // of it here, and make more clones from this one if required, as later on it will get populated
           var nodeTemplate = node.cloneNode(true);
 
           for (var [k, v] of Object.entries(fieldValue)) {
-            var key = Number(k);
-            if (key != 0) {
-              var newNode = nodeTemplate.cloneNode(true);
-              for (var [label, item] of Object.entries(v)) {
-                var subNode = (newNode as HTMLElement).querySelector(label);
-                if (subNode) { subNode.innerHTML = String(item) || ''; }
-              }
-              datasetNode.appendChild(newNode);
-            } else {
-              for (var [label, item] of Object.entries(v)) {
-                var subNode = node.querySelector(label);
-                if (subNode) { subNode.innerHTML = String(item) || ''; }
-              }
+            // See previous comment; Creator 1 uses the template node, creator 2, 3, 4, etc needs a clone
+            if (k != '0') {
+              node = (nodeTemplate.cloneNode(true) as HTMLElement);
+              datasetNode.appendChild(node);
+            }
+
+            // Fill in creator.givenName, etc
+            for (var [label, item] of Object.entries(v)) {
+              var subNode = node.querySelector(label);
+              if (subNode) { subNode.innerHTML = String(item) || ''; }
             }
           }
         } else {
