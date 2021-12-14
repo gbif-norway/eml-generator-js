@@ -63,15 +63,41 @@ const App = () => {
   const getPopulatedEmlTemplate = () => {
     const parser = new DOMParser();
     var emlDoc = parser.parseFromString(emlTemplate, "text/xml");
-    var node = emlDoc.querySelector('eml>dataset>title');
-    if (node) {
-      node.innerHTML = jsonformsData['title'] || '';
-      //node.setAttribute('attributelabel', 'attributevalue');
+
+    for (const [fieldKey, fieldValue] of Object.entries(jsonformsData)) {
+      var datasetNode = emlDoc.querySelector('eml>dataset');
+      var node = emlDoc.querySelector('eml>dataset>' + fieldKey);
+
+      if (node && datasetNode) {
+        if (Array.isArray(fieldValue)) {
+          var nodeTemplate = node.cloneNode(true);
+
+          for (var [k, v] of Object.entries(fieldValue)) {
+            var key = Number(k);
+            if (key != 0) {
+              var newNode = nodeTemplate.cloneNode(true);
+              for (var [label, item] of Object.entries(v)) {
+                var subNode = (newNode as HTMLElement).querySelector(label);
+                if (subNode) { subNode.innerHTML = String(item) || ''; }
+              }
+              datasetNode.appendChild(newNode);
+            } else {
+              for (var [label, item] of Object.entries(v)) {
+                var subNode = node.querySelector(label);
+                if (subNode) { subNode.innerHTML = String(item) || ''; }
+              }
+            }
+          }
+        } else {
+          node.innerHTML = String(fieldValue) || '';
+        }
+      }
     }
+
     var XMLS = new XMLSerializer();
     var inp_xmls = XMLS.serializeToString(emlDoc);
     return inp_xmls;
-  }
+  };
 
   const downloadEML = () => {
     const element = document.createElement("a");
