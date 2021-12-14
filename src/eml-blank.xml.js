@@ -106,10 +106,6 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
                <taxonRankName />
                <taxonRankValue />
             </taxonomicClassification>
-            <taxonomicClassification>
-               <taxonRankName />
-               <taxonRankValue />
-            </taxonomicClassification>
          </taxonomicCoverage>
       </coverage>
       <purpose>
