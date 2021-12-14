@@ -14,10 +14,12 @@
       "items": {
         "type": "object",
         "properties": {
-          "firstName": {
+          "givenName": {
+            "title": "First name",
             "type": "string"
           },
-          "lastName": {
+          "surName": {
+            "title": "Surname",
             "type": "string"
           },
           "electronicMailAddress": {
