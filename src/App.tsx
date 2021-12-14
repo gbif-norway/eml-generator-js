@@ -76,7 +76,7 @@ const App = () => {
           var nodeTemplate = node.cloneNode(true);
 
           for (var [k, v] of Object.entries(fieldValue)) {
-            // See previous comment; Creator 1 uses the template node, creator 2, 3, 4, etc needs a clone
+            // See previous comment; Creator 1 uses the already existing node, creator 2, 3, 4, etc needs a clone
             if (k != '0') {
               node = (nodeTemplate.cloneNode(true) as HTMLElement);
               datasetNode.appendChild(node);
