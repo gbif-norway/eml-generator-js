@@ -100,11 +100,22 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
                <calendarDate />
             </singleDateTime>
          </temporalCoverage>
+         <temporalCoverage>
+            <rangeOfDates>
+              <beginDate>
+                <calendarDate></calendarDate>
+              </beginDate>
+              <endDate>
+                <calendarDate></calendarDate>
+              </endDate>
+            </rangeOfDates>
+         </temporalCoverage>
          <taxonomicCoverage>
             <generalTaxonomicCoverage />
             <taxonomicClassification>
                <taxonRankName />
                <taxonRankValue />
+               <commonName />
             </taxonomicClassification>
          </taxonomicCoverage>
       </coverage>
@@ -219,6 +230,7 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
                <collectionName />
             </collection>
             <specimenPreservationMethod />
+            <livingTimePeriod />
             <jgtiCuratorialUnit>
                <jgtiUnitType />
                <jgtiUnitRange>

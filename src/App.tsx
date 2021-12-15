@@ -68,8 +68,10 @@ const App = () => {
       var datasetNode = emlDoc.querySelector('eml>dataset');
       var node = emlDoc.querySelector('eml>dataset>' + fieldKey);
 
-      if (node && datasetNode) {
+      if (datasetNode && node && fieldValue) {
+        console.log(fieldKey);
         if (Array.isArray(fieldValue)) {
+          console.log('is array');
           // There may be multiple e.g. creator nodes in the eml. The blank template
           // has 1 single example for each of these. So we keep an empty clone
           // of it here, and make more clones from this one if required, as later on it will get populated
@@ -96,6 +98,7 @@ const App = () => {
 
     var XMLS = new XMLSerializer();
     var inp_xmls = XMLS.serializeToString(emlDoc);
+    console.log(inp_xmls);
     return inp_xmls;
   };
 
@@ -104,8 +107,8 @@ const App = () => {
     const file = new Blob([getPopulatedEmlTemplate()], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
     element.download = "eml.xml";
-    document.body.appendChild(element); // Required for this to work in FireFox
-    element.click();
+    //document.body.appendChild(element); // Required for this to work in FireFox
+    //element.click();
   };
 
   return (
