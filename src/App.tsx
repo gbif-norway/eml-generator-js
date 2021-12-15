@@ -5,8 +5,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import logo from './logo.svg';
 import './App.css';
-import schema from './schema.json';
-import uischema from './uischema.json';
+import schema from './schema.js';
+import uischema from './uischema.js';
 import {
   materialCells,
   materialRenderers,
@@ -18,7 +18,7 @@ import emlTemplate from './eml-blank.xml.js';
 
 const useStyles = makeStyles((_theme) => ({
   container: {
-    padding: '1em',
+    padding: '0em 4em 1em 4em',
     width: '100%',
   },
   title: {
@@ -39,7 +39,7 @@ const useStyles = makeStyles((_theme) => ({
   demoform: {
     margin: 'auto',
     padding: '1rem',
-  },
+  }
 }));
 
 const initialData = {};
@@ -112,8 +112,10 @@ const App = () => {
     <Fragment>
       <div className='App'>
         <header className='App-header'>
-          <h1 className='App-title'>EML generator</h1>
-          <p className='App-intro'>Fill in metadata in english. More detail = better findability = more citations.</p>
+          <h1 className='App-title'>
+            EML generator
+          </h1>
+          <p className='App-intro'>Fill in metadata in English. More detail = better findability = more citations.</p>
         </header>
       </div>
 
@@ -123,10 +125,7 @@ const App = () => {
         spacing={1}
         className={classes.container}
       >
-        <Grid item sm={11}>
-          <Typography variant={'h3'} className={classes.title}>
-            Rendered form
-          </Typography>
+        <Grid item sm={12}>
           <div className={classes.demoform}>
             <JsonForms
               schema={schema}
@@ -137,14 +136,7 @@ const App = () => {
               onChange={({ errors, data }) => setJsonformsData(data)}
             />
           </div>
-        </Grid>
-        <Grid item sm={1}>
-          <Button
-            className={classes.resetButton}
-            onClick={downloadEML}
-            color='primary'
-            variant='contained'
-          >
+          <Button className={classes.resetButton} onClick={downloadEML} color='primary' variant='contained'>
             Download EML
           </Button>
         </Grid>
