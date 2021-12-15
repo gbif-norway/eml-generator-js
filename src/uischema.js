@@ -14,10 +14,10 @@ var uischema = {
     { type: 'Category', label: 'Coverage', elements: [
       { type: 'Group', label: 'Geographic Coverage', elements: [
         { type: 'HorizontalLayout', elements: [
-          { type: 'Control', scope: '#/properties/geographicCoverage/properties/northBoundingCoordinate' },
-          { type: 'Control', scope: '#/properties/geographicCoverage/properties/southBoundingCoordinate' },
-          { type: 'Control', scope: '#/properties/geographicCoverage/properties/eastBoundingCoordinate' },
-          { type: 'Control', scope: '#/properties/geographicCoverage/properties/westBoundingCoordinate' }
+          { type: 'Control', scope: '#/properties/coverage/properties/geographicCoverage/properties/northBoundingCoordinate' },
+          { type: 'Control', scope: '#/properties/coverage/properties/geographicCoverage/properties/southBoundingCoordinate' },
+          { type: 'Control', scope: '#/properties/coverage/properties/geographicCoverage/properties/eastBoundingCoordinate' },
+          { type: 'Control', scope: '#/properties/coverage/properties/geographicCoverage/properties/westBoundingCoordinate' }
         ] }
       ]},
       { type: 'HorizontalLayout', elements: [ { type: 'Control', scope: '#/properties/taxonomicCoverage' }] },
