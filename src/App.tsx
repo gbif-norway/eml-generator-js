@@ -14,7 +14,8 @@ import {
 import RatingControl from './RatingControl';
 import ratingControlTester from './ratingControlTester';
 import { makeStyles } from '@material-ui/core/styles';
-import emlTemplate from './eml-blank.xml.js';
+import MakeEMLButton from "./MakeEMLButton";
+
 
 const useStyles = makeStyles((_theme) => ({
   container: {
@@ -59,55 +60,6 @@ const App = () => {
     setDisplayDataAsString(JSON.stringify(jsonformsData, null, 2));
   }, [jsonformsData]);
 
-
-  const getPopulatedEmlTemplate = () => {
-    const parser = new DOMParser();
-    var emlDoc = parser.parseFromString(emlTemplate, "text/xml");
-
-    for (const [fieldKey, fieldValue] of Object.entries(jsonformsData)) {
-      var datasetNode = emlDoc.querySelector('eml>dataset');
-      var node = emlDoc.querySelector('eml>dataset>' + fieldKey);
-
-      if (datasetNode && node && fieldValue) {
-        if (Array.isArray(fieldValue)) {
-          // There may be multiple e.g. creator nodes in the eml. The blank template
-          // has 1 single example for each of these. So we keep an empty clone
-          // of it here, and make more clones from this one if required, as later on it will get populated
-          var nodeTemplate = node.cloneNode(true);
-
-          for (var [k, v] of Object.entries(fieldValue)) {
-            // See previous comment; Creator 1 uses the already existing node, creator 2, 3, 4, etc needs a clone
-            if (k != '0') {
-              node = (nodeTemplate.cloneNode(true) as HTMLElement);
-              datasetNode.appendChild(node);
-            }
-
-            // Fill in creator.givenName, etc
-            for (var [label, item] of Object.entries(v)) {
-              var subNode = node.querySelector(label);
-              if (subNode) { subNode.innerHTML = String(item) || ''; }
-            }
-          }
-        } else {
-          node.innerHTML = String(fieldValue) || '';
-        }
-      }
-    }
-
-    var XMLS = new XMLSerializer();
-    var inp_xmls = XMLS.serializeToString(emlDoc);
-    return inp_xmls;
-  };
-
-  const downloadEML = () => {
-    const element = document.createElement("a");
-    const file = new Blob([getPopulatedEmlTemplate()], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = "eml.xml";
-    document.body.appendChild(element); // Required for this to work in FireFox
-    element.click();
-  };
-
   return (
     <Fragment>
       <div className='App'>
@@ -136,9 +88,7 @@ const App = () => {
               onChange={({ errors, data }) => setJsonformsData(data)}
             />
           </div>
-          <Button className={classes.resetButton} onClick={downloadEML} color='primary' variant='contained'>
-            Download EML
-          </Button>
+          <MakeEMLButton jsonformsData={jsonformsData} />
         </Grid>
       </Grid>
     </Fragment>
