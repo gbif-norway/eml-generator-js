@@ -1,25 +1,13 @@
 import emlTemplate from './eml-blank.xml.js';
 
 const MakePopulatedEML = (jsonformsData) => {
-  console.log('hello');
-  console.log(jsonformsData);
-  console.log(Object.entries(jsonformsData));
   const parser = new DOMParser();
-  console.log(emlTemplate);
   var emlDoc = parser.parseFromString(emlTemplate, "text/xml");
 
   var datasetNode = emlDoc.querySelector('eml>dataset');
-  console.log(emlDoc);
-  console.log(emlDoc.querySelector("eml"));
-  console.log(emlDoc.firstElementChild);
 
   for (const [fieldKey, fieldValue] of Object.entries(jsonformsData)) {
     var node = emlDoc.querySelector('eml>dataset>' + fieldKey);
-    console.log(datasetNode);
-    console.log(node);
-    debugger;
-    console.log('eml>dataset>' + fieldKey);
-    console.log(fieldValue);
     if (datasetNode && node && fieldValue) {
       if (Array.isArray(fieldValue)) {
         // There may be multiple e.g. creator nodes in the eml. The blank template
@@ -48,8 +36,6 @@ const MakePopulatedEML = (jsonformsData) => {
 
   var XMLS = new XMLSerializer();
   var inp_xmls = XMLS.serializeToString(emlDoc);
-  console.log(inp_xmls);
-  console.log('wtf');
   return '<?xml version="1.0" encoding="UTF-8"?>' + inp_xmls;
 };
 
