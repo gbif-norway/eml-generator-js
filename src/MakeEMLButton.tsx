@@ -1,6 +1,5 @@
 import React from "react";
 import Button from '@material-ui/core/Button';
-import emlTemplate from './eml-blank.xml.js';
 import MakePopulatedEML from './MakePopulatedEML';
 
 interface Props {
