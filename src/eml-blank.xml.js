@@ -1,5 +1,5 @@
 var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
-<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:dc="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd" packageId="https://ipt.gbif.no/resource?id=test/v1.1" system="http://gbif.org" scope="system" xml:lang="eng">
+<eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:dc="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd" packageId="https://ipt.gbif.no/resource?id=test/v1.1" system="http://gbif.org" scope="system" xml:lang="eng">
    <dataset>
       <alternateIdentifier />
       <title xml:lang="eng" />
@@ -103,10 +103,10 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
          <temporalCoverage>
             <rangeOfDates>
               <beginDate>
-                <calendarDate></calendarDate>
+                <calendarDate />
               </beginDate>
               <endDate>
-                <calendarDate></calendarDate>
+                <calendarDate />
               </endDate>
             </rangeOfDates>
          </temporalCoverage>
@@ -242,6 +242,6 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
          </gbif>
       </metadata>
    </additionalMetadata>
-</eml:eml>`;
+</eml>`;
 
 export default emlTemplate ;
