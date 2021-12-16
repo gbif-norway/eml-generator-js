@@ -1,19 +1,9 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment } from 'react';
 import { JsonForms } from '@jsonforms/react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import logo from './logo.svg';
 import './App.css';
-import schema from './schema.js';
-import uischema from './uischema.js';
-import {
-  materialCells,
-  materialRenderers,
-} from '@jsonforms/material-renderers';
-import RatingControl from './RatingControl';
-import ratingControlTester from './ratingControlTester';
-import { makeStyles } from '@material-ui/core/styles';
 import MakeEMLButton from "./MakeEMLButton";
 
 
@@ -46,9 +36,7 @@ const useStyles = makeStyles((_theme) => ({
 const initialData = {};
 
 const renderers = [
-  ...materialRenderers,
-  //register custom renderers
-  { tester: ratingControlTester, renderer: RatingControl },
+  ...materialRenderers
 ];
 
 const App = () => {
