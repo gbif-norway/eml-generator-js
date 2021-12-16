@@ -77,18 +77,13 @@ var schema = {
         }
       }
     },
-    coverage: {
+    geographicCoverage: {
       type: 'object',
       properties: {
-        geographicCoverage: {
-          type: 'object',
-          properties: {
-            westBoundingCoordinate:   { type: 'string', title: 'West' },
-            eastBoundingCoordinate:   { type: 'string', title: 'East' },
-            northBoundingCoordinate:  { type: 'string', title: 'North' },
-            southBoundingCoordinate:  { type: 'string', title: 'South' }
-          }
-        }
+        westBoundingCoordinate:   { type: 'string', title: 'West' },
+        eastBoundingCoordinate:   { type: 'string', title: 'East' },
+        northBoundingCoordinate:  { type: 'string', title: 'North' },
+        southBoundingCoordinate:  { type: 'string', title: 'South' }
       }
     },
     taxonomicCoverage: {

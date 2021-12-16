@@ -64,13 +64,9 @@ describe('getPopulatedEmlTemplate', () => {
 
   it('fills in geographic Coverage', () => {
     const formData = {
-      coverage: {
-        geographicCoverage: {
-          westBoundingCoordinate: '4',
-          eastBoundingCoordinate: '11.1',
-          northBoundingCoordinate: '2',
-          southBoundingCoordinate: '3'
-        }
+      geographicCoverage: {
+        westBoundingCoordinate: '4', eastBoundingCoordinate: '11.1',
+        northBoundingCoordinate: '2', southBoundingCoordinate: '3'
       }
     };
     const expected = '<coverage><geographicCoverage><geographicDescription/><boundingCoordinates>'
