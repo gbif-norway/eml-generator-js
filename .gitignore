@@ -34,4 +34,4 @@ typings/
 .yarn-integrity
 
 .DS_STORE
-
+build
