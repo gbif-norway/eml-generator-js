@@ -1,3 +1,17 @@
+const person_items = {
+  type: 'object',
+  properties: {
+    givenName:              { type: 'string', title: 'First name' },
+    surName:                { type: 'string', title: 'Surname' },
+    electronicMailAddress:  { type: 'string', title: 'Email' },
+    positionName:           { type: 'string' },
+    organizationName:       { type: 'string' },
+    city:                   { type: 'string' },
+    country:                { type: 'string', description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.'},
+    userId:                 { type: 'string', title: 'ORCID' }
+  }
+}
+
 var schema = {
   type: 'object',
   properties: {
@@ -6,76 +20,22 @@ var schema = {
     creator: {
       type: 'array',
       title: 'Creator(s) - those who created the resource, in priority order.',
-      items: {
-        type: 'object',
-        properties: {
-          givenName:              { type: 'string', title: 'First name' },
-          surName:                { type: 'string', title: 'Surname' },
-          electronicMailAddress:  { type: 'string', title: 'Email' },
-          //phone:                  { type: 'string' },
-          positionName:           { type: 'string' },
-          organizationName:       { type: 'string' },
-          //deliveryPoint:          { type: 'string', title: 'Address' },
-          city:                   { type: 'string' },
-          //administrativeArea:     { type: 'string', title: 'State/Province' },
-          country:                { type: 'string', description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.'},
-          //postalCode:             { type: 'string' },
-          //onlineUrl:              { type: 'string', title: 'Home Page' },
-          //userId__directory:      { type: 'string' },
-          userId:                 { type: 'string', title: 'ORCID' }
-        }
-      }
+      items: person_items
     },
     contact: {
       type: 'array',
       title: 'Contact(s) - curators of the resource who should be contacted for more information or to fix data problems.',
-      items: {
-        type: 'object',
-        properties: {
-          givenName:              { type: 'string', title: 'First name' },
-          surName:                { type: 'string', title: 'Surname' },
-          electronicMailAddress:  { type: 'string', title: 'Email' },
-          positionName:           { type: 'string', title: 'Position' },
-          organizationName:       { type: 'string', title: 'Organisation' },
-          city:                   { type: 'string' },
-          country:                { type: 'string', description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.'},
-          userId:                 { type: 'string', title: 'ORCID' }
-        }
-      }
+      items: person_items
     },
     metadataProvider: {
       type: 'array',
       title: 'Metadata Provider(s) - those responsible for producing the resource metadata.',
-      items: {
-        type: 'object',
-        properties: {
-          givenName:              { type: 'string', title: 'First name' },
-          surName:                { type: 'string', title: 'Surname' },
-          electronicMailAddress:  { type: 'string', title: 'Email' },
-          positionName:           { type: 'string', title: 'Position' },
-          organizationName:       { type: 'string', title: 'Organisation' },
-          city:                   { type: 'string' },
-          country:                { type: 'string', description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.'},
-          userId:                 { type: 'string', title: 'ORCID' }
-        }
-      }
+      items: person_items
     },
     associatedParty: {
       type: 'array',
       title: 'Associated person(s) - others associated with the resource.',
-      items: {
-        type: 'object',
-        properties: {
-          givenName:              { type: 'string', title: 'First name' },
-          surName:                { type: 'string', title: 'Surname' },
-          electronicMailAddress:  { type: 'string', title: 'Email' },
-          positionName:           { type: 'string', title: 'Position' },
-          organizationName:       { type: 'string', title: 'Organisation' },
-          city:                   { type: 'string' },
-          country:                { type: 'string', description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.'},
-          userId:                 { type: 'string', title: 'ORCID' }
-        }
-      }
+      items: person_items
     },
     geographicCoverage: {
       type: 'object',
@@ -170,14 +130,13 @@ var schema = {
         }
       }
     },
-    specimenPreservationMethod: { type: 'array', items: { type: 'string' } },
+    specimenPreservationMethod: { type: 'array', items: { type: 'string', enum: ['noTreatment', 'alcohol', 'deepFrozen', 'dried', 'driedAndPressed', 'formalin', 'refrigerated', 'freezeDried-dried', 'glycerin', 'gumArabic', 'microscopicPreparation', 'mounted', 'pinned', 'other'] } },
     jgtiCuratorialUnit: {
       type: 'array',
-      title: ' Curatorial Units',
+      title: ' Curatorial Units - count range',
       items: {
         type: 'object',
         properties: {
-          jgtiUnitType: { type: 'string', title: 'Unit Type' },
           beginRange:  { type: 'string', format: 'date' },
           endRange: { type: 'string', format: 'date' }
         }
@@ -206,7 +165,7 @@ var schema = {
     additionalInfo: { type: 'string' },
     alternateIdentifier: { type: 'array', title: 'Alternative Identifier(s)', items: { type: 'string' } }
   },
-  required: ['title', 'abstract', 'creator', 'contact']
+  //required: ['title', 'abstract', 'creator', 'contact']
 };
 
 export default schema;
