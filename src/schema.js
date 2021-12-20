@@ -104,16 +104,20 @@ var schema = {
         }
       }
     },
-    temporalCoverage: {
+    singleDateTime: {
+      type: 'object',
+      properties: { calendarDate: { type: 'string', format: 'date', title: 'Single date' } }
+    },
+    rangeOfDates:   {
       type: 'object',
       properties: {
-        singleDateTime:   { type: 'string', format: 'date', title: 'Single date' },
-        rangeOfDates:   {
+        beginDate: {
           type: 'object',
-          properties: {
-            beginDate: { type: 'string', format: 'date' },
-            endDate: { type: 'string', format: 'date' },
-          }
+          properties: { calendarDate: { type: 'string', format: 'date', title: 'Begin' } }
+        },
+        endDate: {
+          type: 'object',
+          properties: { calendarDate: { type: 'string', format: 'date', title: 'End' } }
         }
       }
     },
@@ -123,7 +127,84 @@ var schema = {
         formationPeriod: { type: 'string' },
         livingTimePeriod: { type: 'string' }
       }
-    }
+    },
+    project: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        abstract: { type: 'string' },
+        funding: { type: 'string' }
+      }
+    },
+    keywordSet: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          keywordThesaurus: { type: 'string', description: 'A name for the keyword thesaurus/vocabulary from which the keywords were derived. Keyword thesauri are usually discipline-specific and can be custom or official. If the keywords are not drawn from a specific thesaurus or vocabulary, enter "na". Example(s): "IRIS keyword thesaurus"' },
+          keyword: { type: 'string', title: 'Keyword List' }
+        }
+      }
+    },
+    methodStep: { type: 'array', items: { type: 'object', properties: { description: { type: 'string'} } } },
+    studyExtent: { type: 'string'},
+    samplingDescription: { type: 'string'},
+    qualityControl: { type: 'string'},
+    citation: { type: 'string' },
+    citation__identifier: { type: 'string' },
+    bibliography: { type: 'array', items: {
+      type: 'object',
+      properties: {
+        citation: { type: 'string'},
+        citation__identifier: { type: 'string' }
+      }
+    } },
+    collection: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          collectionName: { type: 'string' },
+          collectionIdentifier:  { type: 'string' },
+          parentCollectionIdentifier: { type: 'string' }
+        }
+      }
+    },
+    specimenPreservationMethod: { type: 'array', items: { type: 'string' } },
+    jgtiCuratorialUnit: {
+      type: 'array',
+      title: ' Curatorial Units',
+      items: {
+        type: 'object',
+        properties: {
+          jgtiUnitType: { type: 'string', title: 'Unit Type' },
+          beginRange:  { type: 'string', format: 'date' },
+          endRange: { type: 'string', format: 'date' }
+        }
+      }
+    },
+    online: { type: 'object', properties: { url: { type: 'string', title: 'Resource Homepage' } } },
+    physical: {
+      type: 'array',
+      title: 'Other Data Formats',
+      items: {
+        type: 'object',
+        properties: {
+          objectName: { type: 'string', title: 'Name' },
+          characterEncoding:  { type: 'string' },
+          formatName: { type: 'string' },
+          formatVersion: { type: 'string' },
+          url: { type: 'string' }
+        }
+      }
+    },
+    purpose: { type: 'string' },
+    maintenance: {
+      type: 'object',
+      properties: { description: { type: 'string', title: 'Maintenance' } }
+    },
+    additionalInfo: { type: 'string' },
+    alternateIdentifier: { type: 'array', title: 'Alternative Identifier(s)', items: { type: 'string' } }
   },
   required: ['title', 'abstract', 'creator', 'contact']
 };

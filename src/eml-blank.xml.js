@@ -153,11 +153,6 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
                <para />
             </description>
          </methodStep>
-         <methodStep>
-            <description>
-               <para />
-            </description>
-         </methodStep>
          <sampling>
             <studyExtent>
                <description>
@@ -174,7 +169,7 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
             </description>
          </qualityControl>
       </methods>
-      <project id="ident">
+      <project>
          <title />
          <personnel>
             <individualName>
@@ -208,6 +203,9 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
             <dateStamp />
             <hierarchyLevel>dataset</hierarchyLevel>
             <citation identifier="" />
+            <bibliography>
+              <citation identifier="">bib1</citation>
+            </bibliography>
             <physical>
                <objectName />
                <characterEncoding />
@@ -229,6 +227,7 @@ var emlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
                <collectionIdentifier />
                <collectionName />
             </collection>
+            <formationPeriod />
             <specimenPreservationMethod />
             <livingTimePeriod />
             <jgtiCuratorialUnit>
