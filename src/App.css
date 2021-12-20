@@ -20,7 +20,7 @@
 th, td { padding-left: 0 !important; }
 header { padding-left: 5em; }
 th.NoBorderTableCell-noBottomBorder-6 { padding-bottom: 0; }
-td.MuiTableCell-root { padding-top: 0; }
+td.MuiTableCell-root { padding-top: 0; padding-bottom: 0; }
 th.MuiTableCell-root { padding-bottom: 0; }
 .MuiStepper-horizontal { margin-bottom: 1em; }
 td>p.MuiTypography-body1 { font-weight: bold; padding: 10px; background-color: #c6efe5; }
