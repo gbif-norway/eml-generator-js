@@ -25,3 +25,7 @@ th.MuiTableCell-root { padding-bottom: 0; }
 .MuiStepper-horizontal { margin-bottom: 1em; }
 td>p.MuiTypography-body1 { font-weight: bold; padding: 10px; background-color: #c6efe5; }
 .MuiCardContent-root, .MuiCardHeader-root { padding-bottom: 0; }
+
+button.MuiTab-root { background-color: #fffbf5; border-right: 1px solid white; }
+button.MuiTab-root:hover { background-color: #fff3e3 }
+.MuiCardContent-root .MuiCard-root .MuiCardHeader-root .MuiTypography-h5 { font-size: 0.8em; }

@@ -20,23 +20,26 @@ var uischema = {
           { type: 'Control', scope: '#/properties/geographicCoverage/properties/westBoundingCoordinate' }
         ] }
       ]},
-      { type: 'HorizontalLayout', elements: [ { type: 'Control', scope: '#/properties/taxonomicCoverage' }] },
+      { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/taxonomicCoverage' }] },
+      //{ type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/temporalCoverage' }] },
       { type: 'Group', label: 'Temporal Coverage', elements: [
         { type: 'HorizontalLayout', elements: [
-          { type: 'Control', scope: '#/properties/singleDateTime/properties/calendarDate' },
           { type: 'Group', label: 'Date range', elements: [
-            {type: 'Control', scope: '#/properties/rangeOfDates/properties/beginDate/properties/calendarDate' },
-            {type: 'Control', scope: '#/properties/rangeOfDates/properties/endDate/properties/calendarDate' }
+            { type: 'Control', scope: '#/properties/rangeOfDates/properties/beginDate/properties/calendarDate' },
+            { type: 'Control', scope: '#/properties/rangeOfDates/properties/endDate/properties/calendarDate' }
           ]},
+          { type: 'Control', scope: '#/properties/singleDateTime/properties/calendarDate' },
           { type: 'Control', scope: '#/properties/additionalMetadata/properties/formationPeriod' },
           { type: 'Control', scope: '#/properties/additionalMetadata/properties/livingTimePeriod' }
         ]}
       ]}
     ]},
     { type: 'Category', label: 'Project data', elements: [
-      { type: 'Control', scope: '#/properties/project' },
-      { type: 'ListWithDetail', scope: '#/properties/keywordSet' }
-      //{ type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/keywordSet' }] },
+      { type: 'Control', scope: '#/properties/project/properties/title' },
+      { type: 'Control', scope: '#/properties/project/properties/abstract', options: { multi: true } },
+      { type: 'Control', scope: '#/properties/project/properties/funding', options: { multi: true } },
+      //{ type: 'ListWithDetail', scope: '#/properties/keywordSet' }
+      { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/keywordSet' }] }
     ]},
     { type: 'Category', label: 'Sampling methods', elements: [
       { type: 'Control', scope: '#/properties/studyExtent' },
@@ -45,8 +48,8 @@ var uischema = {
       { type: 'Control', scope: '#/properties/methodStep' }
     ] },
     { type: 'Category', label: 'Citations', elements: [
-      { type: 'Control', scope: '#/properties/citation', options: { multi: true } },
-      { type: 'Control', scope: '#/properties/citation__identifier' },
+      //{ type: 'Control', scope: '#/properties/citation', options: { multi: true } },
+      //{ type: 'Control', scope: '#/properties/citation__identifier' },
       { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/bibliography' }] }
     ] },
     { type: 'Category', label: 'Collection data', elements: [

@@ -1,3 +1,5 @@
+import countries from './countries.js';
+
 const person_items = {
   type: 'object',
   properties: {
@@ -7,7 +9,7 @@ const person_items = {
     positionName:           { type: 'string' },
     organizationName:       { type: 'string' },
     city:                   { type: 'string' },
-    country:                { type: 'string', description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.'},
+    country:                { type: 'string', enum: Object.keys(countries), description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.' },
     userId:                 { type: 'string', title: 'ORCID' }
   }
 }
@@ -16,7 +18,11 @@ var schema = {
   type: 'object',
   properties: {
     title: { type: 'string', title: 'Dataset title' },
-    abstract: { type: 'string', title: 'Description', description: 'A brief overview of the resource that is being documented broken into paragraphs.' },
+    abstract: {
+      type: 'string',
+      title: 'Description',
+      description: 'A brief overview of the resource that is being documented broken into paragraphs.'
+    },
     creator: {
       type: 'array',
       title: 'Creator(s) - those who created the resource, in priority order.',
@@ -64,9 +70,51 @@ var schema = {
         }
       }
     },
+    /*temporalCoverage: {
+      type: 'object',
+      definitions: {
+        singleDateTimeNested: {
+          type: 'object',
+          properties: {
+            singleDateTime: {
+              type: 'object',
+              title: 'Single date',
+              properties: { calendarDate: { type: 'string', format: 'date' } }
+            }
+          }
+        },
+        rangeOfDates:   {
+          type: 'object',
+          title: '- or Date range',
+          properties: {
+            beginDate: {
+              type: 'object',
+              title: '',
+              properties: { calendarDate: { type: 'string', format: 'date', title: 'Begin' } }
+            },
+            endDate: {
+              type: 'object',
+              title: '',
+              properties: { calendarDate: { type: 'string', format: 'date', title: 'End' } }
+            }
+          }
+        },
+
+      },
+      properties: {
+        temporalCoverage: {
+          oneOf: [
+            { "$ref": "#/properties/temporalCoverage/definitions/singleDateTimeNested" },
+            { "$ref": "#/properties/temporalCoverage/definitions/rangeOfDates" },
+            { "$ref": "#/properties/additionalMetadata/properties/formationPeriod" },
+            { "$ref": "#/properties/additionalMetadata/properties/livingTimePeriod" }
+          ]
+        }
+      }
+    },*/
     singleDateTime: {
       type: 'object',
-      properties: { calendarDate: { type: 'string', format: 'date', title: 'Single date' } }
+      properties: { calendarDate: { type: 'string', format: 'date', title: ' - or Single Date' } }
     },
     rangeOfDates:   {
       type: 'object',
@@ -84,8 +132,8 @@ var schema = {
     additionalMetadata: {
       type: 'object',
       properties: {
-        formationPeriod: { type: 'string' },
-        livingTimePeriod: { type: 'string' }
+        formationPeriod: { type: 'string', title: ' - or Formation Period' },
+        livingTimePeriod: { type: 'string', title: ' - or Living Time Period' }
       }
     },
     project: {
@@ -110,14 +158,15 @@ var schema = {
     studyExtent: { type: 'string'},
     samplingDescription: { type: 'string'},
     qualityControl: { type: 'string'},
-    citation: { type: 'string' },
-    citation__identifier: { type: 'string' },
+    //citation: { type: 'string' },
+    //citation__identifier: { type: 'string' },
     bibliography: { type: 'array', items: {
       type: 'object',
       properties: {
         citation: { type: 'string'},
         citation__identifier: { type: 'string' }
-      }
+      },
+      required: ['citation', 'citation__identifier']
     } },
     collection: {
       type: 'array',

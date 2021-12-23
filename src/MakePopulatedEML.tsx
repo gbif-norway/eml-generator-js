@@ -1,25 +1,17 @@
 import emlTemplate from './eml-blank.xml.js';
+import countries from './countries.js';
 
-const Seek = (nodeKey, nodeValue, parentNode) => {
+const Seek = (nodeKey, nodeValue, parentNode, identifier_attribute = '') => {
   var node = parentNode.querySelector(nodeKey);
-  console.log(typeof nodeValue);
-  console.log(typeof nodeValue == 'string');
-  console.log(nodeValue);
-  console.log(nodeKey);
-  console.log(parentNode);
-  console.log(node);
   if (typeof nodeValue == 'string') {
-    console.log('strtrigg');
-    /*const subTag = node.querySelector('description');
-    if(subTag && subTag.querySelector('para')) {
-      subTag.querySelector('para').innerHTML = nodeValue
+    if(nodeKey == 'country') { nodeValue = countries[nodeValue]; };
+    if(nodeKey == 'abstract') { // This needs to be improved
+      nodeValue = '<para>' + nodeValue.split('\n').join('</para><para>') + '</para>';
     }
-    else {*/
-      node.innerHTML = nodeValue;
-    //}
+    node.innerHTML = nodeValue;
+    if (identifier_attribute) { node.setAttribute('identifier', identifier_attribute); }
   }
   else if (Array.isArray(nodeValue)) {
-    console.log('arra');
     const emptyNodeTemplate = node.cloneNode(true);
 
     for (const [k, v] of Object.entries(nodeValue)) {
@@ -27,20 +19,26 @@ const Seek = (nodeKey, nodeValue, parentNode) => {
         const newSiblingNode = (emptyNodeTemplate.cloneNode(true) as HTMLElement);
         node = node.parentNode.insertBefore(newSiblingNode, node.nextSibling);
       }
-      if (typeof v == 'string') {
-        node.innerHTML = v;
-      } else {
-        for (const [label, item] of Object.entries(v)) {
-          Seek(label, item, node);
+
+      if (typeof v == 'string') { node.innerHTML = v; }
+      else {
+        const entries = Object.entries(v);
+
+        // Special object with node attributes:
+        if (entries.length == 2 && entries[1][0].includes('__identifier')) {
+          Seek(entries[0][0], entries[0][1], node, String(entries[1][1]));
+        }
+        // Normal object
+        else {
+          for (const [label, item] of entries) {
+            Seek(label, item, node);
+          }
         }
       }
     }
   }
   else if (typeof nodeValue == 'object') {
-    console.log('obj');
     for (const [k, v] of Object.entries(nodeValue)) {
-      console.log(k);
-      console.log(v);
       var newNode = node.querySelector(k);
       if (newNode) { Seek(k, v, newNode.parentNode); }
     }
@@ -58,8 +56,7 @@ const MakePopulatedEML = (jsonformsData) => {
 
   var XMLS = new XMLSerializer();
   var inp_xmls = XMLS.serializeToString(emlDoc);
-  console.log(inp_xmls);
-  return '<?xml version="1.0" encoding="UTF-8"?>' + inp_xmls;
+  return inp_xmls.replace('<eml ', '<eml:eml ').replace('</eml', '</eml:eml');
 };
 
 export default MakePopulatedEML;

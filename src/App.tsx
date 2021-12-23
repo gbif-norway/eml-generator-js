@@ -11,7 +11,8 @@ import {
 import RatingControl from './RatingControl';
 import ratingControlTester from './ratingControlTester';
 import { makeStyles } from '@material-ui/core/styles';
-import MakeEMLButton from "./MakeEMLButton";
+import MakeEMLButton from './MakeEMLButton';
+import initialDataSeed from './initialData.js';
 
 
 const useStyles = makeStyles((_theme) => ({
@@ -40,7 +41,7 @@ const useStyles = makeStyles((_theme) => ({
   }
 }));
 
-const initialData = {};
+const initialData = initialDataSeed;
 
 const renderers = [
   ...materialRenderers,

@@ -6,10 +6,7 @@ interface Props {
   jsonformsData: object;
 }
 
-const MakeEMLButton: React.FC<Props> = ({
-    jsonformsData
-  }) => {
-
+const MakeEMLButton: React.FC<Props> = ({ jsonformsData }) => {
   const downloadEML = () => {
     const element = document.createElement("a");
     const file = new Blob([MakePopulatedEML(jsonformsData)], { type: 'text/plain' });

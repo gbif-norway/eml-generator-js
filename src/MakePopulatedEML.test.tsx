@@ -11,18 +11,41 @@ import emlTemplate from './eml-blank.xml.js';
 describe('getPopulatedEmlTemplate', () => {
   it('serves an empty eml file if empty form data is passed in', () => {
     const results = MakePopulatedEML({});
-    expect(removeSpaces(results)).toBe(removeSpaces(emlTemplate));
+    const expected = emlTemplate.replace('<eml ', '<eml:eml ').replace('</eml', '</eml:eml'); // Cannot parse eml:eml tag, only eml
+    expect(removeSpaces(results)).toBe(removeSpaces(expected));
   });
 
-  it('fills in simple fields like title and abstract', () => {
-    const formData = { title: 'My title', abstract: 'My abstract'};
-    const expectedTitleTag = '<title xml:lang="eng">My title</title>';
-    const expectedAbstractTag = '<abstract>My abstract</abstract>';
+  it('fills in simple fields like title', () => {
+    const formData = { title: 'My title' };
+    const expected = '<title xml:lang="eng">My title</title>';
 
     const results = MakePopulatedEML(formData);
-    expect(results).toContain(expectedTitleTag);
-    expect(results).toContain(expectedAbstractTag);
+    expect(results).toContain(expected);
   });
+
+  it('adds paragraph tags for abstracts with one paragraph', () => {
+    const formData = { abstract: 'Description' };
+    const expected = '<abstract><para>Description</para></abstract>';
+
+    const results = MakePopulatedEML(formData);
+    expect(results).toContain(expected);
+  })
+
+  it('adds paragraph tags for abstracts with two paragraphs', () => {
+    const formData = { abstract: 'Description\nNewParagraph1' };
+    const expected = '<abstract><para>Description</para><para>NewParagraph1</para></abstract>';
+
+    const results = MakePopulatedEML(formData);
+    expect(results).toContain(expected);
+  })
+
+  it('adds paragraph tags for abstracts with multiple paragraphs', () => {
+    const formData = { abstract: 'Description\nNewParagraph1\nNewParagraph2' };
+    const expected = '<abstract><para>Description</para><para>NewParagraph1</para><para>NewParagraph2</para></abstract>';
+
+    const results = MakePopulatedEML(formData);
+    expect(results).toContain(expected);
+  })
 
   it('fills in potential multiple fields like resourceContact', () => {
     const formData = {
@@ -61,6 +84,14 @@ describe('getPopulatedEmlTemplate', () => {
     expect(results.split('firstname_AP').length - 1).toEqual(1);
     expect(results.split('firstname_MP').length - 1).toEqual(1);
   });
+
+  it('converts country name strings into country codes', () => {
+    const formData = { contact: [{ country: 'NORWAY' }] };
+    const expected = '<country>NO</country>';
+
+    const results = MakePopulatedEML(formData);
+    expect(removeSpaces(results)).toContain(expected);
+  })
 
   it('fills in geographic Coverage', () => {
     const formData = {
@@ -129,7 +160,7 @@ describe('getPopulatedEmlTemplate', () => {
 
   it('fills in project data', () => {
     const formData = { project: { abstract: 'Description1', funding: 'Money!' } };
-    const expected = '<abstract>Description1</abstract><funding>Money!</funding>';
+    const expected = '<abstract><para>Description1</para></abstract><funding>Money!</funding>';
 
     const results = MakePopulatedEML(formData);
     expect(removeSpaces(results)).toContain(expected);
@@ -156,6 +187,20 @@ describe('getPopulatedEmlTemplate', () => {
     expect(removeSpaces(results)).toContain('Step2');
     expect(removeSpaces(results)).toContain(sampling);
     expect(removeSpaces(results)).toContain(qc);
+  });
+
+  it('fills in citation information', () => {
+    const formData = {
+      bibliography: [
+        { citation: "first", citation__identifier: "id1" },
+        { citation: "second", citation__identifier: "id2" }
+      ]
+    }
+    const expected = '<bibliography><citationidentifier="id1">first</citation></bibliography>'
+    + '<bibliography><citationidentifier="id2">second</citation></bibliography>';
+
+    const results = MakePopulatedEML(formData);
+    expect(removeSpaces(results)).toContain(expected);
   });
 
   it('fills in collection info', () => {
