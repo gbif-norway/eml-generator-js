@@ -12,7 +12,7 @@ services:
       - VIRTUAL_HOST=eml.localhost
       - VIRTUAL_PORT=3000
     volumes:
-      - ./app:/app
+      - .:/app
 
 networks:
   default:

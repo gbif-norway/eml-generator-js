@@ -1,12 +1,9 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState } from 'react';
 import { JsonForms } from '@jsonforms/react';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import logo from './logo.svg';
 import './App.css';
-import schema from './schema.json';
-import uischema from './uischema.json';
+import schema from './schema.js';
+import uischema from './uischema.js';
 import {
   materialCells,
   materialRenderers,
@@ -14,10 +11,13 @@ import {
 import RatingControl from './RatingControl';
 import ratingControlTester from './ratingControlTester';
 import { makeStyles } from '@material-ui/core/styles';
+import MakeEMLButton from './MakeEMLButton';
+import initialDataSeed from './initialData.js';
+
 
 const useStyles = makeStyles((_theme) => ({
   container: {
-    padding: '1em',
+    padding: '0em 4em 1em 4em',
     width: '100%',
   },
   title: {
@@ -38,10 +38,10 @@ const useStyles = makeStyles((_theme) => ({
   demoform: {
     margin: 'auto',
     padding: '1rem',
-  },
+  }
 }));
 
-const initialData = {};
+const initialData = initialDataSeed;
 
 const renderers = [
   ...materialRenderers,
@@ -51,23 +51,16 @@ const renderers = [
 
 const App = () => {
   const classes = useStyles();
-  const [displayDataAsString, setDisplayDataAsString] = useState('');
   const [jsonformsData, setJsonformsData] = useState<any>(initialData);
-
-  useEffect(() => {
-    setDisplayDataAsString(JSON.stringify(jsonformsData, null, 2));
-  }, [jsonformsData]);
-
-  const clearData = () => {
-    setJsonformsData({});
-  };
 
   return (
     <Fragment>
       <div className='App'>
         <header className='App-header'>
-          <h1 className='App-title'>EML generator</h1>
-          <p className='App-intro'>Fill in metadata in english. More detail = better findability = more citations.</p>
+          <h1 className='App-title'>
+            EML generator
+          </h1>
+          <p className='App-intro'>Fill in metadata in English. More detail = better findability = more citations.</p>
         </header>
       </div>
 
@@ -78,9 +71,6 @@ const App = () => {
         className={classes.container}
       >
         <Grid item sm={12}>
-          <Typography variant={'h3'} className={classes.title}>
-            Rendered form
-          </Typography>
           <div className={classes.demoform}>
             <JsonForms
               schema={schema}
@@ -91,6 +81,7 @@ const App = () => {
               onChange={({ errors, data }) => setJsonformsData(data)}
             />
           </div>
+          <MakeEMLButton jsonformsData={jsonformsData} />
         </Grid>
       </Grid>
     </Fragment>

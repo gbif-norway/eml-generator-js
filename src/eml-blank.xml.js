@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:dc="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd" packageId="https://ipt.gbif.no/resource?id=test/v1.1" system="http://gbif.org" scope="system" xml:lang="eng">
+var emlTemplate = `<eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:dc="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd" packageId="https://ipt.gbif.no/resource?id=test/v1.1" system="http://gbif.org" scope="system" xml:lang="eng">
    <dataset>
       <alternateIdentifier />
       <title xml:lang="eng" />
@@ -20,7 +19,7 @@
          <phone />
          <electronicMailAddress />
          <onlineUrl />
-         <userId directory="" />
+         <userId directory="http://orcid.org/" />
       </creator>
       <metadataProvider>
          <individualName>
@@ -39,7 +38,7 @@
          <phone />
          <electronicMailAddress />
          <onlineUrl />
-         <userId directory="" />
+         <userId directory="http://orcid.org/" />
       </metadataProvider>
       <associatedParty>
          <individualName>
@@ -58,6 +57,7 @@
          <phone />
          <electronicMailAddress />
          <onlineUrl />
+         <userId directory="http://orcid.org/" />
          <role />
       </associatedParty>
       <pubDate />
@@ -100,15 +100,22 @@
                <calendarDate />
             </singleDateTime>
          </temporalCoverage>
+         <temporalCoverage>
+            <rangeOfDates>
+              <beginDate>
+                <calendarDate />
+              </beginDate>
+              <endDate>
+                <calendarDate />
+              </endDate>
+            </rangeOfDates>
+         </temporalCoverage>
          <taxonomicCoverage>
             <generalTaxonomicCoverage />
             <taxonomicClassification>
                <taxonRankName />
                <taxonRankValue />
-            </taxonomicClassification>
-            <taxonomicClassification>
-               <taxonRankName />
-               <taxonRankValue />
+               <commonName />
             </taxonomicClassification>
          </taxonomicCoverage>
       </coverage>
@@ -138,14 +145,9 @@
          <phone />
          <electronicMailAddress />
          <onlineUrl />
-         <userId directory="" />
+         <userId directory="http://orcid.org/" />
       </contact>
       <methods>
-         <methodStep>
-            <description>
-               <para />
-            </description>
-         </methodStep>
          <methodStep>
             <description>
                <para />
@@ -167,7 +169,7 @@
             </description>
          </qualityControl>
       </methods>
-      <project id="ident">
+      <project>
          <title />
          <personnel>
             <individualName>
@@ -201,6 +203,9 @@
             <dateStamp />
             <hierarchyLevel>dataset</hierarchyLevel>
             <citation identifier="" />
+            <bibliography>
+              <citation identifier="" />
+            </bibliography>
             <physical>
                <objectName />
                <characterEncoding />
@@ -222,9 +227,11 @@
                <collectionIdentifier />
                <collectionName />
             </collection>
+            <formationPeriod />
             <specimenPreservationMethod />
+            <livingTimePeriod />
             <jgtiCuratorialUnit>
-               <jgtiUnitType />
+               <jgtiUnitType>countrange</jgtiUnitType>
                <jgtiUnitRange>
                   <beginRange />
                   <endRange />
@@ -234,4 +241,6 @@
          </gbif>
       </metadata>
    </additionalMetadata>
-</eml:eml>
+</eml>`;
+
+export default emlTemplate ;
