@@ -1,8 +1,8 @@
 var properties = {
   "eml.title": "Title",
-  "eml.description": "Description",
-  "eml.description.help": "A brief overview of the resource that is being documented broken into paragraphs.",
-  "eml.description.item": "Paragraph",
+  "eml.abstract": "Description",
+  "eml.abstract.help": "A brief overview of the resource that is being documented broken into paragraphs.",
+  "eml.abstract.item": "Paragraph",
   "eml.publishingOrganisation": "Publishing Organization",
   "eml.publishingOrganisation.help": "Please select the organization responsible for publishing (producing, releasing, holding) this resource. It will be used as the resource''s publishing organization when registering this resource with GBIF and when submitting metadata during DOI registrations. It will also be used to auto-generate the citation for the resource (if auto-generation is turned on), so consider the prominence of the role. Please be aware your selection cannot be changed after the resource has been either registered with GBIF or assigned a DOI.",
   "eml.publishingOrganisation.required": "Publishing Organization is required.",
@@ -101,13 +101,13 @@ var properties = {
   "eml.geospatialCoverages.boundingCoordinates.max.latitude": "North",
   "eml.geospatialCoverages.boundingCoordinates.min.longitude": "West",
   "eml.geospatialCoverages.boundingCoordinates.max.longitude": "East",
-  "eml.taxonomicCoverages.description": "Description",
-  "eml.taxonomicCoverages.description.help": "A description of the range of taxa addressed in the data set or collection.<br /><b>Example(s):</b><br /><i>\"All vascular plants were identified to family or species, mosses and lichens were identified as moss or lichen.\"</i>",
-  "eml.taxonomicCoverages.taxonKeyword.scientificName": "Scientific Name",
-  "eml.taxonomicCoverages.taxonKeyword.commonName": "Common Name",
-  "eml.taxonomicCoverages.taxonKeyword.rank": "Rank",
-  "eml.taxonomicCoverages.taxonList": "Taxon List",
-  "eml.taxonomicCoverages.taxonList.help": "Add several taxa (one per line).",
+  "eml.taxonomicCoverage.generalTaxonomicCoverage": "Description",
+  "eml.taxonomicCoverage.generalTaxonomicCoverage.help": "A description of the range of taxa addressed in the data set or collection. Example(s):\"All vascular plants were identified to family or species, mosses and lichens were identified as moss or lichen.\"",
+  /*"eml.taxonomicCoverage.taxonKeyword.scientificName": "Scientific Name",
+  "eml.taxonomicCoverage.taxonKeyword.commonName": "Common Name",
+  "eml.taxonomicCoverage.taxonKeyword.rank": "Rank",
+  "eml.taxonomicCoverage.taxonList": "Taxon List",
+  "eml.taxonomicCoverage.taxonList.help": "Add several taxa (one per line).",*/
   "eml.temporalCoverages.type": "Temporal Coverage Type",
   "eml.temporalCoverages.singleDate": "Single Date",
   "eml.temporalCoverages.singleDate.help": "This date is meant to represent a coverage spanning one day. Use one of these date formats:",
@@ -120,22 +120,22 @@ var properties = {
   "eml.temporalCoverages.livingTimePeriod": "Living Time Period",
   "eml.temporalCoverages.livingTimePeriod.help": "Time period during which biological material was alive. Includes palaeontological time periods or other text phrases (e.g., \"1900-1950\", \"Ming Dynasty\", \"Pleistocene\").",
   "eml.project.title": "Title",
-  "eml.project.identifier": "Identifier",
-  "eml.project.identifier.help": "A unique identifier for the research project. This can be used to link multiple dataset/EML document instances that are associated in some way with the same project, e.g. a monitoring series. The nature of the association can be described in the project description.",
-  "eml.project.description": "Description",
-  "eml.project.description.help": "Abstract about the research project.",
+  //"eml.project.identifier": "Identifier",
+  //"eml.project.identifier.help": "A unique identifier for the research project. This can be used to link multiple dataset/EML document instances that are associated in some way with the same project, e.g. a monitoring series. The nature of the association can be described in the project description.",
+  "eml.project.abstract": "Description",
+  "eml.project.abstract.help": "Abstract about the research project.",
   "eml.project.personnel": "Project Personnel",
-  "eml.project.personnel.help": "The list of personnel represents the people involved in the project.",
+  /*"eml.project.personnel.help": "The list of personnel represents the people involved in the project.",
   "eml.project.personnel.required": "At least one personnel is required",
   "eml.project.personnel.firstName": "Personnel First Name",
   "eml.project.personnel.lastName": "Personnel Last Name",
-  "eml.project.personnel.intro": "The personnel involved in the project",
+  "eml.project.personnel.intro": "The personnel involved in the project",*/
   "eml.project.funding": "Funding",
   "eml.project.funding.help": "Information about funding sources for the project (e.g., grant and contract numbers, names and addresses of funding sources). Other funding-related information may also be included.",
-  "eml.project.studyAreaDescription.descriptorValue": "Study Area Description",
-  "eml.project.studyAreaDescription.descriptorValue.help": "Documents the physical area associated with the research project. It can include descriptions of the geographic, temporal, and taxonomic coverage of the research location.",
-  "eml.project.designDescription": "Design Description",
-  "eml.project.designDescription.help": "A general textual description of research design. It can include detailed accounts of goals, motivations, theory, hypotheses, strategy, statistical design, and actual work.",
+  //"eml.project.studyAreaDescription.descriptorValue": "Study Area Description",
+  //"eml.project.studyAreaDescription.descriptorValue.help": "Documents the physical area associated with the research project. It can include descriptions of the geographic, temporal, and taxonomic coverage of the research location.",
+  //"eml.project.designDescription": "Design Description",
+  //"eml.project.designDescription.help": "A general textual description of research design. It can include detailed accounts of goals, motivations, theory, hypotheses, strategy, statistical design, and actual work.",
   "eml.studyExtent": "Study Extent",
   "eml.studyExtent.help": "This field represents both a specific sampling area and the sampling frequency (temporal boundaries, frequency of occurrence). The geographic study extent is usually a surrogate (representative area of) for the larger area documented in the \"Study Area Description\" field of the Project metadata page.",
   "eml.sampleDescription": "Sampling Description",
@@ -216,36 +216,56 @@ var properties = {
   "eml.updateFrequency.default": "The update frequency defaulted to unknown.",
   "eml.updateFrequency.default.interval": "The update frequency defaulted to auto-publishing interval: {0}",
   "eml.updateFrequencyDescription": "Maintenance Description",
-  "eml.updateFrequencyDescription.help": "A description of the maintenance frequency of this resource. This description compliments the update frequency selected on the Basic Metadata page."
-}
+  "eml.updateFrequencyDescription.help": "A description of the maintenance frequency of this resource. This description compliments the update frequency selected on the Basic Metadata page.",
 
-//var help_enum = Object.keys(properties).map(function(key, value) {
-//  return { const: k, title: properties[k] }
-//});
-
-function deepen(obj) {
-  const result = {};
-
-  // For each object path (property key) in the object
-  for (const objectPath in obj) {
-    // Split path into component parts
-    const path = objectPath.replace('eml.', '') + '.val';
-    var parts = path.split('.');
-
-    // Create sub-objects along path as needed
-    let target = result;
-    while (parts.length > 1) {
-      const part = parts.shift();
-      target = target[part] = target[part] || {};
-    }
-
-    // Set value at end of path
-    target[parts[0]] = obj[objectPath]
-  }
-
-  return result;
-}
-
-var eml = deepen(properties);
+  // Manage.metadata section
+  "eml.parties.title": "Associated Parties",
+  "eml.parties.title.numbered": "Associated Party {0}",
+  "eml.parties.intro": "Parties associated with this resource (e.g., the hosting institution).",
+  "eml.parties.item": "associated party",
+  "eml.geocoverage.title": "Geographic Coverage",
+  "eml.geocoverage.intro": "Drag the markers or fill in the fields to set the geographic bounding box of the area covered by the resource.",
+  "eml.geocoverage.warning": "Please use dot . as a decimal separator",
+  "eml.taxcoverage.title": "Taxonomic Coverage",
+  "eml.taxcoverage.intro": "Please enter metadata about the taxonomic areas covered by the resource.",
+  "eml.taxcoverage.item": "taxonomic coverage",
+  "eml.taxcoverage.addSeveralTaxa": "Add several taxa",
+  "eml.taxcoverage.addSeveralTaxa.help": "List taxa treated in your dataset at a meaningful level of detail, that is down to orders or families for larger taxa datasets; to genera for a family(-ies)-based datasets and species for a genus-based datasets.",
+  "eml.taxcoverage.subitem": "taxonomic keyword",
+  "eml.taxcoverage.taxon.item": "taxon",
+  "eml.taxcoverage.unranked": "Unranked",
+  //"eml.project.title": "Project Data",
+  "eml.project.intro": "Please enter metadata about the project under which the data in this resource were produced.",
+  "eml.methods.title": "Sampling Methods",
+  "eml.methods.intro": "Please enter metadata about the sampling methods used for the data represented by the resource.",
+  "eml.methods.item": "method step",
+  "eml.tempcoverage.title": "Temporal Coverage",
+  "eml.tempcoverage.intro": "Please enter metadata about the time periods covered by the resource. First select the type of time period, then fill in the form fields that appear.",
+  "eml.tempcoverage.item": "temporal coverage",
+  "eml.citations.title": "Citations",
+  "eml.citations.intro": "Please enter how your resource should be cited. To ensure your resource is reliably and consistently cited, let the IPT auto-generate the citation for you. An optional bibliography can also be entered, i.e., citations of other resources related to or used in the creation of this resource.",
+  "eml.citations.warning": "BE AWARE: Free-text citations get overwritten on the GBIF.org dataset page – learn more <a href=\"https://www.gbif.org/faq?question=how-is-the-dataset-citation-text-auto-generated\" target=\"_blank\">here</a> and <a href=\"https://www.gbif.org/faq?q=citation\" target=\"_blank\">here</a>.",
+  "eml.citations.bibliography": "Bibliographic Citations",
+  "eml.citations.bibliography.help": "Citations of other resources related to or used in the creation of this resource.",
+  "eml.citations.item": "bibliographic citation",
+  "eml.collections.title": "Collection Data",
+  "eml.collections.intro": "Please enter the collection metadata for the resource.",
+  "eml.collections.curatorialUnits.title": "Curatorial Units",
+  "eml.collections.curatorialUnits.title.help": "The counts of curatorial units covered by the resource. The count can be entered as a range or as a value with an uncertainty. Examples of units include skins, sheets, pins, boxes, jars.",
+  "eml.collections.curatorialUnits.item": "curatorial unit",
+  "eml.physical.title": "External Links",
+  "eml.physical.intro": "External links to your resource homepage or other available formats (e.g., database dumps, spreadsheets, nexus, linked data, etc.).",
+  "eml.physical.item": "external link",
+  "eml.physical.alternativeTitle": "External data",
+  "eml.keywords.title": "Keywords",
+  "eml.keywords.intro": "Please enter sets of keywords for the resource, each with a thesaurus or controlled vocabulary.",
+  "eml.keywords.item": "keywords",
+  "eml.additional.title": "Additional Metadata",
+  "eml.additional.intro": "Please enter the additional metadata for the resource.",
+  "eml.additional.logo.intro": "<b>Upload resource logo:</b> If you don''t have a URL for the resource logo, you may upload an image file selected from your disk.",
+  "eml.alternateIdentifiers.title": "Alternative Identifiers",
+  "eml.alternateIdentifiers.title.help": "Alternative identifiers that are used to label this resource, possibly from different data management systems, can be listed here.",
+  "eml.alternateIdentifiers.item": "alternative identifier"
+};
 
 export default properties;
