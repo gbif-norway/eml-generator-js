@@ -19,30 +19,11 @@ var schema = {
   type: 'object',
   properties: {
     title: { type: 'string', title: 'Dataset title' },
-    abstract: {
-      type: 'string',
-      title: 'Description'
-    },
-    creator: {
-      type: 'array',
-      title: 'Creator(s) - those who created the resource, in priority order.',
-      items: person_items
-    },
-    contact: {
-      type: 'array',
-      title: 'Contact(s) - curators of the resource who should be contacted for more information or to fix data problems.',
-      items: person_items
-    },
-    metadataProvider: {
-      type: 'array',
-      title: 'Metadata Provider(s) - those responsible for producing the resource metadata.',
-      items: person_items
-    },
-    associatedParty: {
-      type: 'array',
-      title: 'Associated person(s) - others associated with the resource.',
-      items: person_items
-    },
+    abstract: { type: 'string', title: 'Description' },
+    creator: { type: 'array', title: 'Creator(s) - those who created the resource, in priority order.', items: person_items },
+    contact: { type: 'array', title: 'Contact(s) - curators of the resource who should be contacted for more information or to fix data problems.', items: person_items },
+    metadataProvider: { type: 'array', title: 'Metadata Provider(s) - those responsible for producing the resource metadata.', items: person_items },
+    associatedParty: { type: 'array', title: 'Associated person(s) - others associated with the resource.', items: person_items },
     geographicCoverage: {
       type: 'object',
       properties: {
@@ -113,20 +94,26 @@ var schema = {
         }
       }
     },
-    methodStep: { type: 'array', items: { type: 'object', properties: { description: { type: 'string'} } } },
+    methodStep: {
+      type: 'array',
+      items: { type: 'object', properties: { description: { type: 'string'} } },
+      title: 'Method steps - list methods used in the study and steps leading to the production of the data files, in enough detail to allow for replication. E.g. relevant literature, software, instrumentation, source data and any quality control measures taken.'
+    },
     studyExtent: { type: 'string'},
     samplingDescription: { type: 'string'},
     qualityControl: { type: 'string'},
-    //citation: { type: 'string' },
-    //citation__identifier: { type: 'string' },
-    bibliography: { type: 'array', items: {
-      type: 'object',
-      properties: {
-        citation: { type: 'string'},
-        citation__identifier: { type: 'string' }
-      },
-      required: ['citation', 'citation__identifier']
-    } },
+    bibliography: {
+      type: 'array',
+      title: 'Bibliography - cite external resources related to/used in the creation of this resource.',
+      items: {
+        type: 'object',
+        properties: {
+          citation: { type: 'string'},
+          citation__identifier: { type: 'string' }
+        },
+        required: ['citation', 'citation__identifier']
+      }
+    },
     collection: {
       type: 'array',
       items: {

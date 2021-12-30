@@ -251,7 +251,7 @@ var properties = {
   "eml.collections.title": "Collection Data",
   "eml.collections.intro": "Please enter the collection metadata for the resource.",
   "eml.collections.curatorialUnits.title": "Curatorial Units",
-  "eml.collections.curatorialUnits.title.help": "The counts of curatorial units covered by the resource. The count can be entered as a range or as a value with an uncertainty. Examples of units include skins, sheets, pins, boxes, jars.",
+  //"eml.collections.curatorialUnits.title.help": "The counts of curatorial units covered by the resource. The count can be entered as a range or as a value with an uncertainty. Examples of units include skins, sheets, pins, boxes, jars.",
   "eml.collections.curatorialUnits.item": "curatorial unit",
   "eml.physical.title": "External Links",
   "eml.physical.intro": "External links to your resource homepage or other available formats (e.g., database dumps, spreadsheets, nexus, linked data, etc.).",
