@@ -14,7 +14,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import MakeEMLButton from './MakeEMLButton';
 import initialDataSeed from './initialData.js';
 import ReactGA from 'react-ga';
-ReactGA.initialize('G-LM0ZYK1B7M');
+ReactGA.initialize('UA-165033400-8', {
+  debug: true,
+  gaOptions: { cookieFlags: "SameSite=None; Secure" }
+});
 ReactGA.pageview(window.location.pathname + window.location.search);
 
 const useStyles = makeStyles((_theme) => ({
