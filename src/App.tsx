@@ -13,7 +13,9 @@ import ratingControlTester from './ratingControlTester';
 import { makeStyles } from '@material-ui/core/styles';
 import MakeEMLButton from './MakeEMLButton';
 import initialDataSeed from './initialData.js';
-
+import ReactGA from 'react-ga';
+ReactGA.initialize('G-LM0ZYK1B7M');
+ReactGA.pageview(window.location.pathname + window.location.search);
 
 const useStyles = makeStyles((_theme) => ({
   container: {
