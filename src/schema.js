@@ -52,6 +52,7 @@ var schema = {
         southBoundingCoordinate:  { type: 'string', title: 'South' }
       }
     },
+    geographicDescription: { type: 'string', title: 'Description' },
     taxonomicCoverage: {
       type: 'object',
       properties: {

@@ -18,7 +18,8 @@ var uischema = {
           { type: 'Control', scope: '#/properties/geographicCoverage/properties/southBoundingCoordinate' },
           { type: 'Control', scope: '#/properties/geographicCoverage/properties/eastBoundingCoordinate' },
           { type: 'Control', scope: '#/properties/geographicCoverage/properties/westBoundingCoordinate' }
-        ] }
+        ] },
+        { type: 'Control', scope: '#/properties/geographicDescription' }
       ]},
       { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/taxonomicCoverage' }] },
       //{ type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/temporalCoverage' }] },

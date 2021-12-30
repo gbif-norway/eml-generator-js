@@ -98,9 +98,10 @@ describe('getPopulatedEmlTemplate', () => {
       geographicCoverage: {
         westBoundingCoordinate: '4', eastBoundingCoordinate: '11.1',
         northBoundingCoordinate: '2', southBoundingCoordinate: '3'
-      }
+      },
+      geographicDescription: 'test'
     };
-    const expected = '<coverage><geographicCoverage><geographicDescription/><boundingCoordinates>'
+    const expected = '<coverage><geographicCoverage><geographicDescription>test</geographicDescription><boundingCoordinates>'
     + '<westBoundingCoordinate>4</westBoundingCoordinate><eastBoundingCoordinate>11.1</eastBoundingCoordinate>'
     + '<northBoundingCoordinate>2</northBoundingCoordinate><southBoundingCoordinate>3</southBoundingCoordinate></boundingCoordinates>';
 

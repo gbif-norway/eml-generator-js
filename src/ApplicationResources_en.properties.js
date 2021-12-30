@@ -263,9 +263,9 @@ var properties = {
   "eml.additional.title": "Additional Metadata",
   "eml.additional.intro": "Please enter the additional metadata for the resource.",
   "eml.additional.logo.intro": "<b>Upload resource logo:</b> If you don''t have a URL for the resource logo, you may upload an image file selected from your disk.",
-  "eml.alternateIdentifiers.title": "Alternative Identifiers",
-  "eml.alternateIdentifiers.title.help": "Alternative identifiers that are used to label this resource, possibly from different data management systems, can be listed here.",
-  "eml.alternateIdentifiers.item": "alternative identifier"
+  //"eml.alternateIdentifier.title": "Alternative Identifiers",
+  //"eml.alternateIdentifier.title.help": "Alternative identifiers that are used to label this resource, possibly from different data management systems, can be listed here.",
+  //"eml.alternateIdentifier.item": "alternative identifier"
 };
 
 export default properties;
