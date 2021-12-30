@@ -4,7 +4,7 @@
 
 .App-header {
   background-color: #67A268;
-  height: 150px;
+  height: 130px;
   padding: 1em 5em;
   color: white;
 }
@@ -36,3 +36,11 @@ button.MuiTab-root:hover { background-color: #fff3e3 }
 .MuiTable-root { margin-bottom: 20px; }
 th .MuiIconButton-root { background-color: rgba(63, 81, 181, 0.2) !important }
 th .MuiIconButton-root:hover { background-color: rgba(63, 81, 181, 0.5) !important }
+.downloadButton {
+  margin-right: 1em !important;
+  margin-top: -1em !important;
+  float: right;
+  background-color: #379939 !important;
+}
+.downloadButton:hover { background-color: #55ca57 !important; }
+.download p { font-weight: bold; color: red; margin-left: 1em; }
