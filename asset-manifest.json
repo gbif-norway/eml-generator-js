@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/eml-generator-js/static/css/main.cf1ad2c3.chunk.css",
-    "main.js": "/eml-generator-js/static/js/main.8e677a62.chunk.js",
-    "main.js.map": "/eml-generator-js/static/js/main.8e677a62.chunk.js.map",
+    "main.css": "/eml-generator-js/static/css/main.4861e870.chunk.css",
+    "main.js": "/eml-generator-js/static/js/main.222c71f2.chunk.js",
+    "main.js.map": "/eml-generator-js/static/js/main.222c71f2.chunk.js.map",
     "runtime-main.js": "/eml-generator-js/static/js/runtime-main.5c50e8dc.js",
     "runtime-main.js.map": "/eml-generator-js/static/js/runtime-main.5c50e8dc.js.map",
-    "static/js/2.709ba7d7.chunk.js": "/eml-generator-js/static/js/2.709ba7d7.chunk.js",
-    "static/js/2.709ba7d7.chunk.js.map": "/eml-generator-js/static/js/2.709ba7d7.chunk.js.map",
+    "static/js/2.fac7a412.chunk.js": "/eml-generator-js/static/js/2.fac7a412.chunk.js",
+    "static/js/2.fac7a412.chunk.js.map": "/eml-generator-js/static/js/2.fac7a412.chunk.js.map",
     "index.html": "/eml-generator-js/index.html",
-    "static/css/main.cf1ad2c3.chunk.css.map": "/eml-generator-js/static/css/main.cf1ad2c3.chunk.css.map",
-    "static/js/2.709ba7d7.chunk.js.LICENSE.txt": "/eml-generator-js/static/js/2.709ba7d7.chunk.js.LICENSE.txt"
+    "static/css/main.4861e870.chunk.css.map": "/eml-generator-js/static/css/main.4861e870.chunk.css.map",
+    "static/js/2.fac7a412.chunk.js.LICENSE.txt": "/eml-generator-js/static/js/2.fac7a412.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.5c50e8dc.js",
-    "static/js/2.709ba7d7.chunk.js",
-    "static/css/main.cf1ad2c3.chunk.css",
-    "static/js/main.8e677a62.chunk.js"
+    "static/js/2.fac7a412.chunk.js",
+    "static/css/main.4861e870.chunk.css",
+    "static/js/main.222c71f2.chunk.js"
   ]
 }
