@@ -26,6 +26,7 @@ var schema = {
     associatedParty: { type: 'array', title: 'Associated person(s) - others associated with the resource.', items: person_items },
     geographicCoverage: {
       type: 'object',
+      title: 'Geographic coverage in decimal degrees - use dot . as a decimal separator',
       properties: {
         westBoundingCoordinate:   { type: 'string', title: 'West' },
         eastBoundingCoordinate:   { type: 'string', title: 'East' },
@@ -116,6 +117,7 @@ var schema = {
     },
     collection: {
       type: 'array',
+      title: 'Collections - list any collections which this resource is based on',
       items: {
         type: 'object',
         properties: {
