@@ -13,7 +13,13 @@ import ratingControlTester from './ratingControlTester';
 import { makeStyles } from '@material-ui/core/styles';
 import MakeEMLButton from './MakeEMLButton';
 import initialDataSeed from './initialData.js';
-
+import ReactGA from 'react-ga';
+ReactGA.initialize('UA-165033400-8', {
+  testMode: process.env.NODE_ENV === 'test',
+  //debug: true,
+  gaOptions: { cookieFlags: "SameSite=None; Secure" }
+});
+ReactGA.pageview(window.location.pathname + window.location.search);
 
 const useStyles = makeStyles((_theme) => ({
   container: {
@@ -41,7 +47,7 @@ const useStyles = makeStyles((_theme) => ({
   }
 }));
 
-const initialData = initialDataSeed;
+const initialData = {};
 
 const renderers = [
   ...materialRenderers,

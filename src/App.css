@@ -4,7 +4,7 @@
 
 .App-header {
   background-color: #67A268;
-  height: 150px;
+  height: 130px;
   padding: 1em 5em;
   color: white;
 }
@@ -29,3 +29,18 @@ td>p.MuiTypography-body1 { font-weight: bold; padding: 10px; background-color: #
 button.MuiTab-root { background-color: #fffbf5; border-right: 1px solid white; }
 button.MuiTab-root:hover { background-color: #fff3e3 }
 .MuiCardContent-root .MuiCard-root .MuiCardHeader-root .MuiTypography-h5 { font-size: 0.8em; }
+.MuiFormHelperText-root {
+  color: rgba(234, 0, 0, 0.54) !important;
+  font-weight: 600 !important;
+}
+.MuiTable-root { margin-bottom: 20px; }
+th .MuiIconButton-root { background-color: rgba(63, 81, 181, 0.2) !important }
+th .MuiIconButton-root:hover { background-color: rgba(63, 81, 181, 0.5) !important }
+.downloadButton {
+  margin-right: 1em !important;
+  margin-top: -1em !important;
+  float: right;
+  background-color: #379939 !important;
+}
+.downloadButton:hover { background-color: #55ca57 !important; }
+.download p { font-weight: bold; color: red; margin-left: 1em; }

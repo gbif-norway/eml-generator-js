@@ -1,4 +1,5 @@
 import countries from './countries.js';
+import eml from './ApplicationResources_en.properties.js';
 
 const person_items = {
   type: 'object',
@@ -18,33 +19,14 @@ var schema = {
   type: 'object',
   properties: {
     title: { type: 'string', title: 'Dataset title' },
-    abstract: {
-      type: 'string',
-      title: 'Description',
-      description: 'A brief overview of the resource that is being documented broken into paragraphs.'
-    },
-    creator: {
-      type: 'array',
-      title: 'Creator(s) - those who created the resource, in priority order.',
-      items: person_items
-    },
-    contact: {
-      type: 'array',
-      title: 'Contact(s) - curators of the resource who should be contacted for more information or to fix data problems.',
-      items: person_items
-    },
-    metadataProvider: {
-      type: 'array',
-      title: 'Metadata Provider(s) - those responsible for producing the resource metadata.',
-      items: person_items
-    },
-    associatedParty: {
-      type: 'array',
-      title: 'Associated person(s) - others associated with the resource.',
-      items: person_items
-    },
+    abstract: { type: 'string', title: 'Description' },
+    creator: { type: 'array', title: 'Creator(s) - those who created the resource, in priority order.', items: person_items },
+    contact: { type: 'array', title: 'Contact(s) - curators of the resource who should be contacted for more information or to fix data problems.', items: person_items },
+    metadataProvider: { type: 'array', title: 'Metadata Provider(s) - those responsible for producing the resource metadata.', items: person_items },
+    associatedParty: { type: 'array', title: 'Associated person(s) - others associated with the resource.', items: person_items },
     geographicCoverage: {
       type: 'object',
+      title: 'Geographic coverage in decimal degrees - use dot . as a decimal separator',
       properties: {
         westBoundingCoordinate:   { type: 'string', title: 'West' },
         eastBoundingCoordinate:   { type: 'string', title: 'East' },
@@ -52,6 +34,7 @@ var schema = {
         southBoundingCoordinate:  { type: 'string', title: 'South' }
       }
     },
+    geographicDescription: { type: 'string', title: 'Description' },
     taxonomicCoverage: {
       type: 'object',
       properties: {
@@ -70,48 +53,6 @@ var schema = {
         }
       }
     },
-    /*temporalCoverage: {
-      type: 'object',
-      definitions: {
-        singleDateTimeNested: {
-          type: 'object',
-          properties: {
-            singleDateTime: {
-              type: 'object',
-              title: 'Single date',
-              properties: { calendarDate: { type: 'string', format: 'date' } }
-            }
-          }
-        },
-        rangeOfDates:   {
-          type: 'object',
-          title: '- or Date range',
-          properties: {
-            beginDate: {
-              type: 'object',
-              title: '',
-              properties: { calendarDate: { type: 'string', format: 'date', title: 'Begin' } }
-            },
-            endDate: {
-              type: 'object',
-              title: '',
-              properties: { calendarDate: { type: 'string', format: 'date', title: 'End' } }
-            }
-          }
-        },
-
-      },
-      properties: {
-        temporalCoverage: {
-          oneOf: [
-            { "$ref": "#/properties/temporalCoverage/definitions/singleDateTimeNested" },
-            { "$ref": "#/properties/temporalCoverage/definitions/rangeOfDates" },
-            { "$ref": "#/properties/additionalMetadata/properties/formationPeriod" },
-            { "$ref": "#/properties/additionalMetadata/properties/livingTimePeriod" }
-          ]
-        }
-      }
-    },*/
     singleDateTime: {
       type: 'object',
       properties: { calendarDate: { type: 'string', format: 'date', title: ' - or Single Date' } }
@@ -154,22 +95,29 @@ var schema = {
         }
       }
     },
-    methodStep: { type: 'array', items: { type: 'object', properties: { description: { type: 'string'} } } },
+    methodStep: {
+      type: 'array',
+      items: { type: 'object', properties: { description: { type: 'string'} } },
+      title: 'Method steps - list methods used in the study and steps leading to the production of the data files, in enough detail to allow for replication. E.g. relevant literature, software, instrumentation, source data and any quality control measures taken.'
+    },
     studyExtent: { type: 'string'},
     samplingDescription: { type: 'string'},
     qualityControl: { type: 'string'},
-    //citation: { type: 'string' },
-    //citation__identifier: { type: 'string' },
-    bibliography: { type: 'array', items: {
-      type: 'object',
-      properties: {
-        citation: { type: 'string'},
-        citation__identifier: { type: 'string' }
-      },
-      required: ['citation', 'citation__identifier']
-    } },
+    bibliography: {
+      type: 'array',
+      title: 'Bibliography - cite external resources related to/used in the creation of this resource.',
+      items: {
+        type: 'object',
+        properties: {
+          citation: { type: 'string'},
+          citation__identifier: { type: 'string' }
+        },
+        required: ['citation', 'citation__identifier']
+      }
+    },
     collection: {
       type: 'array',
+      title: 'Collections - list any collections which this resource is based on',
       items: {
         type: 'object',
         properties: {
@@ -215,6 +163,36 @@ var schema = {
     alternateIdentifier: { type: 'array', title: 'Alternative Identifier(s)', items: { type: 'string' } }
   },
   //required: ['title', 'abstract', 'creator', 'contact']
+};
+
+// Populate with description help text
+for(var path in eml) {
+  var parts = path.replace('eml.', '').split('.')
+  const last = parts.pop()
+
+  if(last === 'help') {
+    var node = schema['properties'];
+
+    for (var j = 0; j < parts.length; j++) {
+      const x = parts[j];
+      if(x in node) {
+        node = node[x];
+        if(typeof node === 'object' && 'properties' in node && j !== (parts.length - 1)) {
+          node = node['properties'];
+        }
+      }
+      else {
+        if(parts.at(-1) in node) {
+          node = node[parts.at(-1)]
+        };
+        break;
+      }
+    };
+
+    if(node !== schema['properties']) {
+      node.description = eml[path];
+    }
+  }
 };
 
 export default schema;
