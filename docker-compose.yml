@@ -1,20 +1,20 @@
-version: '3'
-
 services:
   web:
-    build: .
-    entrypoint: /bin/ash
-    stdin_open: true
-    tty: true
-    expose:
-      - "3000"
+    build:
+      context: .
+      target: dev
+    ports:
+      - '3000:3000'
     environment:
-      - VIRTUAL_HOST=eml.localhost
-      - VIRTUAL_PORT=3000
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - .:/app
+      - /app/node_modules
 
-networks:
-  default:
-    external:
-      name: nginx-proxy
+  web-prod:
+    build:
+      context: .
+      target: production
+    ports:
+      - '8080:80'

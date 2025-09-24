@@ -1,260 +1,246 @@
 import MakePopulatedEML from './MakePopulatedEML';
-import emlTemplate from './eml-blank.xml.js';
 
 /**
  * @jest-environment jsdom
  */
- const removeSpaces = (xmlString) => {
-   return xmlString.replace(/\s/g, '');
- }
 
-describe('getPopulatedEmlTemplate', () => {
-  it('serves an empty eml file if empty form data is passed in', () => {
-    const results = MakePopulatedEML({});
-    const expected = emlTemplate.replace('<eml ', '<eml:eml ').replace('</eml', '</eml:eml'); // Cannot parse eml:eml tag, only eml
-    expect(removeSpaces(results)).toBe(removeSpaces(expected));
+const parse = (xml: string): Document => new DOMParser().parseFromString(xml, 'application/xml');
+
+const nodeText = (node: Element | null, selector: string): string | null => {
+  if (!node) {
+    return null;
+  }
+
+  const match = node.querySelector(selector);
+  return match ? match.textContent : null;
+};
+
+const countNodes = (doc: Document, selector: string): number => doc.querySelectorAll(selector).length;
+
+const hasSelfClosingTags = (xml: string): boolean => /<[^?>!][^>]*\/\s*>/.test(xml);
+
+describe('MakePopulatedEML', () => {
+  it('creates a minimal but valid EML document without empty tags', () => {
+    const xml = MakePopulatedEML({});
+    const doc = parse(xml);
+
+    expect(xml.startsWith('<eml:eml')).toBe(true);
+    expect(hasSelfClosingTags(xml)).toBe(false);
+    expect(doc.querySelector('dataset')).not.toBeNull();
+    expect(countNodes(doc, 'dataset > alternateIdentifier')).toBe(0);
+    expect(countNodes(doc, 'dataset > creator')).toBe(0);
+    expect(countNodes(doc, 'dataset > contact')).toBe(0);
+    expect(nodeText(doc.documentElement, 'dataset > title')).toBe('Untitled dataset');
+    expect(doc.querySelector('dataset > metadataLanguage')).toBeNull();
+    expect(nodeText(doc.documentElement, 'dataset > language')).toBe('eng');
+    const pubDate = nodeText(doc.documentElement, 'dataset > pubDate');
+    expect(pubDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    const dateStamp = nodeText(doc.documentElement, 'additionalMetadata gbif > dateStamp');
+    expect(dateStamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+    expect(nodeText(doc.documentElement, 'additionalMetadata hierarchyLevel')).toBe('dataset');
   });
 
-  it('fills in simple fields like title', () => {
-    const formData = { title: 'My title' };
-    const expected = '<title xml:lang="eng">My title</title>';
+  it('populates simple textual fields', () => {
+    const xml = MakePopulatedEML({ title: 'Dataset title', abstract: 'First paragraph\nSecond paragraph' });
+    const doc = parse(xml);
 
-    const results = MakePopulatedEML(formData);
-    expect(results).toContain(expected);
+    const title = doc.querySelector('dataset > title');
+    expect(title?.getAttribute('xml:lang')).toBe('eng');
+    expect(title?.textContent).toBe('Dataset title');
+
+    const abstract = doc.querySelectorAll('dataset > abstract > para');
+    expect(abstract.length).toBe(2);
+    expect(Array.from(abstract).map((node) => node.textContent)).toEqual(['First paragraph', 'Second paragraph']);
   });
 
-  it('adds paragraph tags for abstracts with one paragraph', () => {
-    const formData = { abstract: 'Description' };
-    const expected = '<abstract><para>Description</para></abstract>';
-
-    const results = MakePopulatedEML(formData);
-    expect(results).toContain(expected);
-  })
-
-  it('adds paragraph tags for abstracts with two paragraphs', () => {
-    const formData = { abstract: 'Description\nNewParagraph1' };
-    const expected = '<abstract><para>Description</para><para>NewParagraph1</para></abstract>';
-
-    const results = MakePopulatedEML(formData);
-    expect(results).toContain(expected);
-  })
-
-  it('adds paragraph tags for abstracts with multiple paragraphs', () => {
-    const formData = { abstract: 'Description\nNewParagraph1\nNewParagraph2' };
-    const expected = '<abstract><para>Description</para><para>NewParagraph1</para><para>NewParagraph2</para></abstract>';
-
-    const results = MakePopulatedEML(formData);
-    expect(results).toContain(expected);
-  })
-
-  it('fills in potential multiple fields like resourceContact', () => {
-    const formData = {
-      contact: [
+  it('builds party lists and omits missing child elements', () => {
+    const xml = MakePopulatedEML({
+      resourceContact: [
         {
-          givenName: 'firstname_1',
-          surName: 'surname_1',
-          electronicMailAddress: 'email1@email.com',
-          positionName: 'position_1',
-          organizationName: 'org_1'
+          givenName: 'Grant',
+          surName: 'Fitzsimmons',
+          organizationName: 'KU',
+          country: 'UNITED STATES',
+          electronicMailAddress: 'grant@example.org',
+          userId: '0000-0000',
+          deliveryPoint: 'Main St',
+          postalCode: '12345'
         },
         {
-          givenName: 'firstname_2',
-          organizationName: 'org_2'
+          givenName: 'OnlyGivenName'
         }
       ]
-    };
-    const expectedFirstPerson = '<contact><individualName><givenName>firstname_1</givenName><surName>surname_1</surName></individualName><organizationName>org_1</organizationName><positionName>position_1</positionName>';
-    const expectedSecondPerson = '<contact><individualName><givenName>firstname_2</givenName><surName/></individualName><organizationName>org_2</organizationName><positionName/>';
+    });
 
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expectedFirstPerson);
-    expect(removeSpaces(results)).toContain(expectedSecondPerson);
-    expect(results.split('<contact>').length - 1).toEqual(2);
-    expect(results.split('firstname_1').length - 1).toEqual(1);
+    const doc = parse(xml);
+    expect(countNodes(doc, 'dataset > creator')).toBe(2);
+    expect(countNodes(doc, 'dataset > metadataProvider')).toBe(2);
+    const contacts = Array.from(doc.querySelectorAll('dataset > contact'));
+    expect(contacts.length).toBe(2);
+
+    const first = contacts[0];
+    expect(nodeText(first, 'individualName > givenName')).toBe('Grant');
+    expect(nodeText(first, 'individualName > surName')).toBe('Fitzsimmons');
+    expect(nodeText(first, 'address > country')).toBe('US');
+    expect(nodeText(first, 'userId')).toBe('0000-0000');
+    expect(first.querySelector('surName:empty')).toBeNull();
+
+    const second = contacts[1];
+    expect(nodeText(second, 'individualName > givenName')).toBe('OnlyGivenName');
+    expect(second.querySelector('individualName > surName')).toBeNull();
   });
 
-  it('fills in associatedParty and metadataProvider', () => {
-    const formData = { associatedParty: [{ givenName: 'firstname_AP' }], metadataProvider: [{ givenName: 'firstname_MP' }] };
-    const expectedAP = '<associatedParty><individualName><givenName>firstname_AP</givenName>';
-    const expectedMP = '<metadataProvider><individualName><givenName>firstname_MP</givenName>';
+  it('retains legacy party arrays when resource contacts are absent', () => {
+    const xml = MakePopulatedEML({
+      creator: [{ givenName: 'LegacyCreator' }],
+      contact: [{ givenName: 'LegacyContact' }],
+      metadataProvider: [{ givenName: 'LegacyMetadata' }]
+    });
 
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expectedAP);
-    expect(removeSpaces(results)).toContain(expectedMP);
-    expect(results.split('firstname_AP').length - 1).toEqual(1);
-    expect(results.split('firstname_MP').length - 1).toEqual(1);
+    const doc = parse(xml);
+    expect(nodeText(doc.querySelector('dataset > creator'), 'individualName > givenName')).toBe('LegacyCreator');
+    expect(nodeText(doc.querySelector('dataset > contact'), 'individualName > givenName')).toBe('LegacyContact');
+    expect(nodeText(doc.querySelector('dataset > metadataProvider'), 'individualName > givenName')).toBe('LegacyMetadata');
   });
 
-  it('converts country name strings into country codes', () => {
-    const formData = { contact: [{ country: 'NORWAY' }] };
-    const expected = '<country>NO</country>';
+  it('normalises urls for distributions and contacts', () => {
+    const xml = MakePopulatedEML({
+      online: { url: 'example.org/info' },
+      resourceContact: [{ onlineUrl: 'contact.org' }],
+      physical: [{ url: 'download.example.com/file.csv' }],
+      additionalMetadata: { resourceLogoUrl: 'logo.example.com/img.png' }
+    });
 
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expected);
-  })
+    const doc = parse(xml);
+    expect(doc.querySelector('dataset > distribution url')?.textContent).toBe('http://example.org/info');
+    expect(nodeText(doc.querySelector('dataset > contact'), 'onlineUrl')).toBe('http://contact.org/');
+    expect(doc.querySelector('gbif > physical > distribution url')?.textContent).toBe('http://download.example.com/file.csv');
+    expect(nodeText(doc.querySelector('gbif'), 'resourceLogoUrl')).toBe('http://logo.example.com/img.png');
+  });
 
-  it('fills in geographic Coverage', () => {
-    const formData = {
+  it('normalises publication and date stamp values', () => {
+    const xml = MakePopulatedEML({
+      pubDate: '2024-12-05',
+      additionalMetadata: { dateStamp: '2025-09-24' }
+    });
+
+    const doc = parse(xml);
+    expect(nodeText(doc.documentElement, 'dataset > pubDate')).toBe('2024-12-05');
+    expect(nodeText(doc.documentElement, 'additionalMetadata gbif > dateStamp')).toBe('2025-09-24T00:00:00Z');
+  });
+
+  it('derives pubDate from additional metadata when not provided explicitly', () => {
+    const xml = MakePopulatedEML({
+      additionalMetadata: { dateStamp: '2030-03-15' }
+    });
+
+    const doc = parse(xml);
+    expect(nodeText(doc.documentElement, 'dataset > pubDate')).toBe('2030-03-15');
+  });
+
+  it('adds coverage elements only when data is present', () => {
+    const xml = MakePopulatedEML({
       geographicCoverage: {
-        westBoundingCoordinate: '4', eastBoundingCoordinate: '11.1',
-        northBoundingCoordinate: '2', southBoundingCoordinate: '3'
-      }
-    };
-    const expected = '<coverage><geographicCoverage><geographicDescription/><boundingCoordinates>'
-    + '<westBoundingCoordinate>4</westBoundingCoordinate><eastBoundingCoordinate>11.1</eastBoundingCoordinate>'
-    + '<northBoundingCoordinate>2</northBoundingCoordinate><southBoundingCoordinate>3</southBoundingCoordinate></boundingCoordinates>';
-
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expected);
-    expect(results.split('11.1').length - 1).toEqual(1);
-  });
-
-  it('fills in taxonomic Coverage (which has nested multiple fields)', () => {
-    const formData = { generalTaxonomicCoverage: 'General', taxonomicClassification: [
-      { taxonRankName: 'Superphylum', taxonRankValue: 'Patescibacteria', commonName: 'Common_1' },
-      { taxonRankName: 'Genus', taxonRankValue: 'Eudyptes', commonName: 'Penguin' }
-    ]};
-    const expected = '<taxonomicCoverage><generalTaxonomicCoverage>General</generalTaxonomicCoverage>'
-    + '<taxonomicClassification><taxonRankName>Superphylum</taxonRankName><taxonRankValue>Patescibacteria</taxonRankValue><commonName>Common_1</commonName></taxonomicClassification>'
-    + '<taxonomicClassification><taxonRankName>Genus</taxonRankName><taxonRankValue>Eudyptes</taxonRankValue><commonName>Penguin</commonName></taxonomicClassification>'
-    + '</taxonomicCoverage>';
-
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expected);
-    expect(results.split('Eudyptes').length - 1).toEqual(1);
-  });
-
-  it('fills in temporal Coverage', () => {
-    const formData = {
-      singleDateTime: { calendarDate: "2021-01-01" },
-      rangeOfDates: {
-        beginDate: { calendarDate: "2021-01-02" },
-        endDate: { calendarDate: "2021-01-03" }
+        westBoundingCoordinate: '4',
+        eastBoundingCoordinate: '11.1'
       },
-      additionalMetadata: {
-        formationPeriod: 'Early',
-        livingTimePeriod: 'Late'
+      temporalCoverages: [
+        { type: 'DATE_RANGE', startDate: '2021-01-02', endDate: '2021-01-03' },
+        { type: 'SINGLE_DATE', startDate: '2021-01-01' },
+        { type: 'FORMATION_PERIOD', formationPeriod: 'Jurassic' }
+      ],
+      taxonomicCoverage: {
+        generalTaxonomicCoverage: 'General',
+        taxonomicClassification: [
+          { taxonRankName: 'species', taxonRankValue: 'Homo sapiens' }
+        ]
       }
-    };
-    const expectedSingle = '<temporalCoverage><singleDateTime><calendarDate>2021-01-01</calendarDate></singleDateTime></temporalCoverage>';
-    const expectedRange = '<temporalCoverage><rangeOfDates><beginDate><calendarDate>2021-01-02</calendarDate></beginDate>'
-    + '<endDate><calendarDate>2021-01-03</calendarDate></endDate></rangeOfDates></temporalCoverage>';
-    const expectedFormation = '<formationPeriod>Early</formationPeriod>';
-    const expectedLiving = '<livingTimePeriod>Late</livingTimePeriod>';
+    });
 
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expectedSingle);
-    expect(removeSpaces(results)).toContain(expectedRange);
-    expect(removeSpaces(results)).toContain(expectedFormation);
-    expect(removeSpaces(results)).toContain(expectedLiving);
+    const doc = parse(xml);
+    const coverage = doc.querySelector('dataset > coverage');
+    expect(coverage).not.toBeNull();
+    expect(countNodes(doc, 'geographicCoverage boundingCoordinates > westBoundingCoordinate')).toBe(1);
+    expect(countNodes(doc, 'geographicCoverage boundingCoordinates > northBoundingCoordinate')).toBe(0);
+    expect(nodeText(coverage!, 'taxonomicCoverage > generalTaxonomicCoverage')).toBe('General');
+    expect(nodeText(coverage!, 'temporalCoverage > singleDateTime > calendarDate')).toBe('2021-01-01');
+    expect(nodeText(coverage!, 'temporalCoverage > rangeOfDates > beginDate > calendarDate')).toBe('2021-01-02');
+    expect(nodeText(coverage!, 'temporalCoverage > rangeOfDates > endDate > calendarDate')).toBe('2021-01-03');
+    expect(nodeText(coverage!, 'temporalCoverage > formationPeriod')).toBe('Jurassic');
   });
 
-  it('fills in keywords', () => {
-    const formData = { keywordSet: [{ keywordThesaurus: 'IRIS', keyword: 'plant' }] };
-    // Should we add occurrence keywords in here like the IPT does?
-    const expected = '<keywordSet><keyword>plant</keyword><keywordThesaurus>IRIS</keywordThesaurus></keywordSet>';
+  it('creates methods and project sections with paragraphs', () => {
+    const xml = MakePopulatedEML({
+      methodStep: [
+        { description: 'Collect samples' },
+        { description: 'Process data' }
+      ],
+      studyExtent: 'Study extent text',
+      qualityControl: 'QC text',
+      samplingDescription: 'Sampling desc',
+      project: {
+        title: 'Project title',
+        abstract: 'Project abstract',
+        funding: 'Funding info',
+        studyAreaDescription: 'Study area',
+        designDescription: 'Design description'
+      }
+    });
 
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expected);
+    const doc = parse(xml);
+    expect(countNodes(doc, 'dataset > methods > methodStep')).toBe(2);
+    expect(nodeText(doc.querySelector('methods > sampling'), 'studyExtent > description > para')).toBe('Study extent text');
+    expect(nodeText(doc.querySelector('methods > qualityControl'), 'description > para')).toBe('QC text');
+    expect(nodeText(doc.querySelector('project'), 'funding > para')).toBe('Funding info');
   });
 
-  it('fills in project data', () => {
-    const formData = { project: { abstract: 'Description1', funding: 'Money!' } };
-    const expected = '<abstract><para>Description1</para></abstract><funding>Money!</funding>';
-
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expected);
-    // Note there is an 'abstract' right at the start of the EML, check that this one is the only one populated
-    expect(results.split('Description1').length - 1).toEqual(1);
-  });
-
-  it('fills in sampling methods', () => {
-    const formData = {
-      methods: [{ methodStep: 'Step1' }, { methodStep: 'Step2' }],
-      qualityControl: 'QC',
-      samplingDescription: 'Another',
-      studyExtent: 'MyExtent'
-    };
-    // For some weird reason this is rendering as it should (like below) in browser, but not in the test
-    //const expected = '<methods><methodStep><description>Step1</description></methodStep><methodStep><description>Step2</description></methodStep><methodStep><description><para/></description></methodStep>'
-    //+ '<sampling><studyExtent>MyExtent</studyExtent><samplingDescription>Another</samplingDescription></sampling>'
-    //+ '<qualityControl>QC</qualityControl></methods>';
-    const sampling = '<sampling><studyExtent>MyExtent</studyExtent><samplingDescription>Another</samplingDescription></sampling>';
-    const qc = '<qualityControl>QC</qualityControl></methods>';
-
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain('Step1');
-    expect(removeSpaces(results)).toContain('Step2');
-    expect(removeSpaces(results)).toContain(sampling);
-    expect(removeSpaces(results)).toContain(qc);
-  });
-
-  it('fills in citation information', () => {
-    const formData = {
+  it('adds GBIF metadata information with attributes', () => {
+    const xml = MakePopulatedEML({
       bibliography: [
-        { citation: "first", citation__identifier: "id1" },
-        { citation: "second", citation__identifier: "id2" }
-      ]
-    }
-    const expected = '<bibliography><citationidentifier="id1">first</citation></bibliography>'
-    + '<bibliography><citationidentifier="id2">second</citation></bibliography>';
-
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(expected);
-  });
-
-  it('fills in collection info', () => {
-    const formData = {
-      collection: [{ collectionName: 'collname', collectionIdentifier: 'collid', parentCollectionIdentifier: 'parentcoll' }],
-      specimenPreservationMethod: [ '1', '2' ],
-      jgtiCuratorialUnit: [
-        { jgtiUnitType: 'unittype1', beginRange: '2021-12-02'},
-        { jgtiUnitType: 'unittype2', endRange: '2021-12-16' }
-      ]
-    };
-    const collection = '<collection><parentCollectionIdentifier>parentcoll</parentCollectionIdentifier>'
-    + '<collectionIdentifier>collid</collectionIdentifier><collectionName>collname</collectionName></collection>';
-    const preservation = '<specimenPreservationMethod>1</specimenPreservationMethod><specimenPreservationMethod>2</specimenPreservationMethod>';
-    const curatorial = '<jgtiCuratorialUnit><jgtiUnitType>unittype1</jgtiUnitType><jgtiUnitRange><beginRange>2021-12-02</beginRange><endRange/></jgtiUnitRange></jgtiCuratorialUnit>'
-    + '<jgtiCuratorialUnit><jgtiUnitType>unittype2</jgtiUnitType><jgtiUnitRange><beginRange/><endRange>2021-12-16</endRange></jgtiUnitRange></jgtiCuratorialUnit>';
-
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(collection);
-    expect(removeSpaces(results)).toContain(preservation);
-    expect(removeSpaces(results)).toContain(curatorial);
-  });
-
-  it('fills in external links info', () => {
-    const formData = {
-      online: { url: 'myhomepage.com' },
+        { citation: 'Reference one', citation__identifier: 'id1' }
+      ],
       physical: [
-        { characterEncoding: 'utf8', formatName: 'xlsx', formatVersion: '1', objectName: 'zenodo', url: 'zenodo.com'}
-      ]
-    };
-    const online = '<distributionscope="document"><online><urlfunction="information">myhomepage.com</url></online></distribution>';
-    const physical = '<physical><objectName>zenodo</objectName><characterEncoding>utf8</characterEncoding>'
-    + '<dataFormat><externallyDefinedFormat><formatName>xlsx</formatName><formatVersion>1</formatVersion></externallyDefinedFormat></dataFormat>'
-    + '<distribution><online><urlfunction="download">zenodo.com</url></online></distribution></physical>';
+        { objectName: 'Zenodo', url: 'https://zenodo.org', formatName: 'csv' }
+      ],
+      collection: [
+        {
+          parentCollectionIdentifier: 'KUBI',
+          collectionIdentifier: 'KUBI-INFO',
+          collectionName: 'KU Informatics'
+        }
+      ],
+      specimenPreservationMethod: ['alcohol'],
+      jgtiCuratorialUnit: [
+        { jgtiUnitType: 'countrange', beginRange: '10', endRange: '20' }
+      ],
+      additionalMetadata: {
+        citation: 'Dataset citation',
+        citation__identifier: 'doi:1234',
+        dateStamp: '2021-01-01T00:00:00Z',
+        resourceLogoUrl: 'https://example.org/logo.png'
+      }
+    });
 
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(online);
-    expect(removeSpaces(results)).toContain(physical);
+    const doc = parse(xml);
+    const gbif = doc.querySelector('additionalMetadata > metadata > gbif');
+
+    expect(gbif).not.toBeNull();
+    expect(nodeText(gbif!, 'dateStamp')).toMatch(/^2021-01-01T00:00:00/);
+    expect(nodeText(gbif!, 'citation')).toBe('Dataset citation');
+    expect(gbif?.querySelector('citation')?.getAttribute('identifier')).toBe('doi:1234');
+    expect(countNodes(doc, 'gbif > citation')).toBe(1);
+    expect(countNodes(doc, 'gbif > bibliography > citation')).toBe(1);
+    expect(countNodes(doc, 'gbif > physical')).toBe(1);
+    expect(countNodes(doc, 'gbif > collection')).toBe(1);
+    expect(countNodes(doc, 'gbif > specimenPreservationMethod')).toBe(1);
+    expect(countNodes(doc, 'gbif > jgtiCuratorialUnit')).toBe(1);
   });
 
-  it('fills in additional metadata', () => {
-    const formData = {
-      purpose: 'purpose',
-      maintenance: { description: 'maintenance' },
-      additionalInfo: 'addinfo',
-      alternateIdentifier: ['1', '2']
-    }
-    const pm = '<purpose>purpose</purpose><maintenance><description>maintenance</description><maintenanceUpdateFrequency/></maintenance>';
-    const ai = '<additionalInfo>addinfo</additionalInfo>';
-    const identifiers = '<alternateIdentifier>1</alternateIdentifier><alternateIdentifier>2</alternateIdentifier>';
+  it('ignores empty keyword entries', () => {
+    const xml = MakePopulatedEML({ keywordSet: [{}, { keyword: 'plant' }] });
+    const doc = parse(xml);
 
-    const results = MakePopulatedEML(formData);
-    expect(removeSpaces(results)).toContain(pm);
-    expect(removeSpaces(results)).toContain(ai);
-    expect(removeSpaces(results)).toContain(identifiers);
+    expect(countNodes(doc, 'dataset > keywordSet')).toBe(1);
+    expect(nodeText(doc.querySelector('keywordSet'), 'keyword')).toBe('plant');
   });
-})
+});

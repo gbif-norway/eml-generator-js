@@ -15,7 +15,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "types": ["node", "jest"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.test.js", "src/**/*.test.jsx"]
 }

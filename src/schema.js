@@ -2,45 +2,44 @@ import countries from './countries.js';
 
 const person_items = {
   type: 'object',
+  required: ['surName', 'electronicMailAddress'],
   properties: {
-    givenName:              { type: 'string', title: 'First name' },
-    surName:                { type: 'string', title: 'Surname' },
-    electronicMailAddress:  { type: 'string', title: 'Email' },
-    positionName:           { type: 'string' },
-    organizationName:       { type: 'string' },
-    city:                   { type: 'string' },
-    country:                { type: 'string', enum: Object.keys(countries), description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.' },
-    userId:                 { type: 'string', title: 'ORCID' }
+    givenName:             { type: 'string', title: 'First name' },
+    surName:               { type: 'string', title: 'Surname*' },
+    electronicMailAddress: { type: 'string', title: 'Email*', format: 'email' },
+    positionName:          { type: 'string' },
+    organizationName:      { type: 'string' },
+    city:                  { type: 'string' },
+    country: {
+      type: 'string',
+      enum: Object.keys(countries),
+      description: 'Countries, territories, and islands are based on the ISO 3166-1 standard.'
+    },
+    userId: { type: 'string', title: 'ORCID' }
   }
-}
+};
 
 var schema = {
   type: 'object',
+  required: ['title', 'abstract', 'resourceContact'],
   properties: {
-    title: { type: 'string', title: 'Dataset title' },
+    title: { type: 'string', title: 'Dataset title', minLength: 1 },
     abstract: {
       type: 'string',
       title: 'Description',
-      description: 'A brief overview of the resource that is being documented broken into paragraphs.'
+      description: 'A brief overview of the resource that is being documented, broken into paragraphs.',
+      minLength: 1
     },
-    creator: {
+    resourceContact: {
       type: 'array',
-      title: 'Creator(s) - those who created the resource, in priority order.',
-      items: person_items
-    },
-    contact: {
-      type: 'array',
-      title: 'Contact(s) - curators of the resource who should be contacted for more information or to fix data problems.',
-      items: person_items
-    },
-    metadataProvider: {
-      type: 'array',
-      title: 'Metadata Provider(s) - those responsible for producing the resource metadata.',
+      title: 'Resource contact(s)* - At least 1 is REQUIRED',
+      description: 'Add the people responsible for this resource once here.',
+      minItems: 1,
       items: person_items
     },
     associatedParty: {
       type: 'array',
-      title: 'Associated person(s) - others associated with the resource.',
+      title: 'Associated person(s) - Optional',
       items: person_items
     },
     geographicCoverage: {
@@ -126,6 +125,25 @@ var schema = {
         endDate: {
           type: 'object',
           properties: { calendarDate: { type: 'string', format: 'date', title: 'End' } }
+        }
+      }
+    },
+    temporalCoverages: {
+      type: 'array',
+      title: 'Temporal Coverage',
+      items: {
+        type: 'object',
+        required: ['type'],
+        properties: {
+          type: {
+            type: 'string',
+            enum: ['DATE_RANGE', 'SINGLE_DATE', 'FORMATION_PERIOD', 'LIVING_TIME_PERIOD'],
+            title: 'Coverage type'
+          },
+          startDate: { type: 'string', format: 'date', title: 'Start date' },
+          endDate: { type: 'string', format: 'date', title: 'End date' },
+          formationPeriod: { type: 'string', title: 'Formation period' },
+          livingTimePeriod: { type: 'string', title: 'Living time period' }
         }
       }
     },

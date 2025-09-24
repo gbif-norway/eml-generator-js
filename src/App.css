@@ -26,6 +26,34 @@ th.MuiTableCell-root { padding-bottom: 0; }
 td>p.MuiTypography-body1 { font-weight: bold; padding: 10px; background-color: #c6efe5; }
 .MuiCardContent-root, .MuiCardHeader-root { padding-bottom: 0; }
 
+.resource-contact-array #tooltip-validation,
+.resource-contact-array .MuiBadge-root,
+.resource-contact-array .MuiTypography-body2,
+.associated-party-array #tooltip-validation,
+.associated-party-array .MuiBadge-root,
+.associated-party-array .MuiTypography-body2 {
+  display: none !important;
+}
+
+.resource-contact-array th.MuiTableCell-head:nth-of-type(2),
+.resource-contact-array th.MuiTableCell-head:nth-of-type(3),
+.associated-party-array th.MuiTableCell-head:nth-of-type(2),
+.associated-party-array th.MuiTableCell-head:nth-of-type(3) {
+  color: #d32f2f;
+}
+
+.resource-contact-array td.MuiTableCell-root:nth-of-type(2) label,
+.resource-contact-array td.MuiTableCell-root:nth-of-type(3) label,
+.associated-party-array td.MuiTableCell-root:nth-of-type(2) label,
+.associated-party-array td.MuiTableCell-root:nth-of-type(3) label {
+  color: #d32f2f !important;
+}
+
+p.MuiFormHelperText-root, p.Mui-error { display: none;}
+.MuiTableRow-root { border-top: 10px solid white; }
+
 button.MuiTab-root { background-color: #fffbf5; border-right: 1px solid white; }
 button.MuiTab-root:hover { background-color: #fff3e3 }
 .MuiCardContent-root .MuiCard-root .MuiCardHeader-root .MuiTypography-h5 { font-size: 0.8em; }
+
+.makeStyles-demoform-5>div>div.MuiGrid-container>div.MuiGrid-item>h6.MuiTypography-h6{ padding: 15px; margin: 15px 0; background-color: #ffffe9; font-size: 0.8em !important; }
