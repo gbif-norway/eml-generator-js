@@ -7,7 +7,8 @@ const initialData = {
   collection: [],
   specimenPreservationMethod: [],
   jgtiCuratorialUnit: [],
-  physical: []
+  physical: [],
+  temporalCoverages: []
 };
 
 export default initialData;

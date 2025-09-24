@@ -27,7 +27,7 @@ var schema = {
     abstract: {
       type: 'string',
       title: 'Description',
-      description: 'A brief overview of the resource that is being documented broken into paragraphs.',
+      description: 'A brief overview of the resource that is being documented, broken into paragraphs.',
       minLength: 1
     },
     resourceContact: {
@@ -125,6 +125,25 @@ var schema = {
         endDate: {
           type: 'object',
           properties: { calendarDate: { type: 'string', format: 'date', title: 'End' } }
+        }
+      }
+    },
+    temporalCoverages: {
+      type: 'array',
+      title: 'Temporal Coverage',
+      items: {
+        type: 'object',
+        required: ['type'],
+        properties: {
+          type: {
+            type: 'string',
+            enum: ['DATE_RANGE', 'SINGLE_DATE', 'FORMATION_PERIOD', 'LIVING_TIME_PERIOD'],
+            title: 'Coverage type'
+          },
+          startDate: { type: 'string', format: 'date', title: 'Start date' },
+          endDate: { type: 'string', format: 'date', title: 'End date' },
+          formationPeriod: { type: 'string', title: 'Formation period' },
+          livingTimePeriod: { type: 'string', title: 'Living time period' }
         }
       }
     },

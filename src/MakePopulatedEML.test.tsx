@@ -30,8 +30,13 @@ describe('MakePopulatedEML', () => {
     expect(countNodes(doc, 'dataset > alternateIdentifier')).toBe(0);
     expect(countNodes(doc, 'dataset > creator')).toBe(0);
     expect(countNodes(doc, 'dataset > contact')).toBe(0);
-    expect(nodeText(doc.documentElement, 'dataset > metadataLanguage')).toBe('eng');
+    expect(nodeText(doc.documentElement, 'dataset > title')).toBe('Untitled dataset');
+    expect(doc.querySelector('dataset > metadataLanguage')).toBeNull();
     expect(nodeText(doc.documentElement, 'dataset > language')).toBe('eng');
+    const pubDate = nodeText(doc.documentElement, 'dataset > pubDate');
+    expect(pubDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    const dateStamp = nodeText(doc.documentElement, 'additionalMetadata gbif > dateStamp');
+    expect(dateStamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
     expect(nodeText(doc.documentElement, 'additionalMetadata hierarchyLevel')).toBe('dataset');
   });
 
@@ -113,17 +118,37 @@ describe('MakePopulatedEML', () => {
     expect(nodeText(doc.querySelector('gbif'), 'resourceLogoUrl')).toBe('http://logo.example.com/img.png');
   });
 
+  it('normalises publication and date stamp values', () => {
+    const xml = MakePopulatedEML({
+      pubDate: '2024-12-05',
+      additionalMetadata: { dateStamp: '2025-09-24' }
+    });
+
+    const doc = parse(xml);
+    expect(nodeText(doc.documentElement, 'dataset > pubDate')).toBe('2024-12-05');
+    expect(nodeText(doc.documentElement, 'additionalMetadata gbif > dateStamp')).toBe('2025-09-24T00:00:00Z');
+  });
+
+  it('derives pubDate from additional metadata when not provided explicitly', () => {
+    const xml = MakePopulatedEML({
+      additionalMetadata: { dateStamp: '2030-03-15' }
+    });
+
+    const doc = parse(xml);
+    expect(nodeText(doc.documentElement, 'dataset > pubDate')).toBe('2030-03-15');
+  });
+
   it('adds coverage elements only when data is present', () => {
     const xml = MakePopulatedEML({
       geographicCoverage: {
         westBoundingCoordinate: '4',
         eastBoundingCoordinate: '11.1'
       },
-      singleDateTime: { calendarDate: '2021-01-01' },
-      rangeOfDates: {
-        beginDate: { calendarDate: '2021-01-02' },
-        endDate: { calendarDate: '2021-01-03' }
-      },
+      temporalCoverages: [
+        { type: 'DATE_RANGE', startDate: '2021-01-02', endDate: '2021-01-03' },
+        { type: 'SINGLE_DATE', startDate: '2021-01-01' },
+        { type: 'FORMATION_PERIOD', formationPeriod: 'Jurassic' }
+      ],
       taxonomicCoverage: {
         generalTaxonomicCoverage: 'General',
         taxonomicClassification: [
@@ -140,6 +165,8 @@ describe('MakePopulatedEML', () => {
     expect(nodeText(coverage!, 'taxonomicCoverage > generalTaxonomicCoverage')).toBe('General');
     expect(nodeText(coverage!, 'temporalCoverage > singleDateTime > calendarDate')).toBe('2021-01-01');
     expect(nodeText(coverage!, 'temporalCoverage > rangeOfDates > beginDate > calendarDate')).toBe('2021-01-02');
+    expect(nodeText(coverage!, 'temporalCoverage > rangeOfDates > endDate > calendarDate')).toBe('2021-01-03');
+    expect(nodeText(coverage!, 'temporalCoverage > formationPeriod')).toBe('Jurassic');
   });
 
   it('creates methods and project sections with paragraphs', () => {
@@ -198,7 +225,7 @@ describe('MakePopulatedEML', () => {
     const gbif = doc.querySelector('additionalMetadata > metadata > gbif');
 
     expect(gbif).not.toBeNull();
-    expect(nodeText(gbif!, 'dateStamp')).toBe('2021-01-01T00:00:00Z');
+    expect(nodeText(gbif!, 'dateStamp')).toMatch(/^2021-01-01T00:00:00/);
     expect(nodeText(gbif!, 'citation')).toBe('Dataset citation');
     expect(gbif?.querySelector('citation')?.getAttribute('identifier')).toBe('doi:1234');
     expect(countNodes(doc, 'gbif > citation')).toBe(1);

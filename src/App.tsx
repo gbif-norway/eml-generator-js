@@ -17,7 +17,9 @@ import initialDataSeed from './initialData.js';
 import type { JsonRecord } from './MakePopulatedEML';
 import TouchedTextControl, { touchedTextControlTester } from './TouchedTextControl';
 import QuietArrayControl, { quietArrayControlTester } from './QuietArrayControl';
+import LockedCategorizationStepper, { lockedCategorizationStepperTester } from './LockedCategorizationStepper';
 import type { ErrorObject } from 'ajv';
+import TemporalCoverageControl, { temporalCoverageControlTester } from './TemporalCoverageControl';
 
 
 const useStyles = makeStyles((_theme: Theme) => ({
@@ -51,9 +53,11 @@ const initialData = initialDataSeed;
 const renderers = [
   ...materialRenderers,
   //register custom renderers
+  { tester: lockedCategorizationStepperTester, renderer: LockedCategorizationStepper },
   { tester: ratingControlTester, renderer: RatingControl },
   { tester: touchedTextControlTester, renderer: TouchedTextControl },
   { tester: quietArrayControlTester, renderer: QuietArrayControl },
+  { tester: temporalCoverageControlTester, renderer: TemporalCoverageControl },
 ];
 
 const App = () => {

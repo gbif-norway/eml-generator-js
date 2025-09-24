@@ -2,6 +2,7 @@ var uischema = {
   type: 'Categorization',
   elements: [
     { type: 'Category', label: 'Basic metadata', elements: [
+      { type: 'Label', text: 'NB: Title, description and at least one Resource contact is required before generating an EML file or filling in other sections.', options: { className: 'required-info-label' } },
       { type: 'VerticalLayout', elements: [
         { type: 'Control', scope: '#/properties/title' },
         { type: 'Control', scope: '#/properties/abstract', options: { multi: true } }
@@ -21,15 +22,7 @@ var uischema = {
       { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/taxonomicCoverage' }] },
       //{ type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/temporalCoverage' }] },
       { type: 'Group', label: 'Temporal Coverage', elements: [
-        { type: 'HorizontalLayout', elements: [
-          { type: 'Group', label: 'Date range', elements: [
-            { type: 'Control', scope: '#/properties/rangeOfDates/properties/beginDate/properties/calendarDate' },
-            { type: 'Control', scope: '#/properties/rangeOfDates/properties/endDate/properties/calendarDate' }
-          ]},
-          { type: 'Control', scope: '#/properties/singleDateTime/properties/calendarDate' },
-          { type: 'Control', scope: '#/properties/additionalMetadata/properties/formationPeriod' },
-          { type: 'Control', scope: '#/properties/additionalMetadata/properties/livingTimePeriod' }
-        ]}
+        { type: 'Control', scope: '#/properties/temporalCoverages' }
       ]}
     ]},
     { type: 'Category', label: 'Project data', elements: [

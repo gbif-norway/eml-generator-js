@@ -5,6 +5,81 @@ export type JsonRecord = Record<string, unknown>;
 const EML_NS = 'eml://ecoinformatics.org/eml-2.1.1';
 const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
+const DEFAULT_LANGUAGE = 'eng';
+const DEFAULT_TITLE = 'Untitled dataset';
+const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+const defaultDateStamp = (): string => new Date().toISOString();
+
+const toIsoString = (value: string): string | null => {
+  const parsed = Date.parse(value);
+
+  if (Number.isNaN(parsed)) {
+    return null;
+  }
+
+  return new Date(parsed).toISOString();
+};
+
+const normaliseDateTime = (value: unknown): string | null => {
+  if (!hasValue(value)) {
+    return null;
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString();
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return null;
+    }
+
+    if (ISO_DATE_PATTERN.test(trimmed)) {
+      return `${trimmed}T00:00:00Z`;
+    }
+
+    if (/T/.test(trimmed) && !/[+-]\d{2}:\d{2}$/.test(trimmed) && !trimmed.endsWith('Z')) {
+      return `${trimmed}Z`;
+    }
+
+    return toIsoString(trimmed) ?? null;
+  }
+
+  return null;
+};
+
+const normaliseDate = (value: unknown): string | null => {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10);
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return null;
+    }
+
+    if (ISO_DATE_PATTERN.test(trimmed)) {
+      return trimmed;
+    }
+
+    const iso = normaliseDateTime(trimmed);
+    if (iso) {
+      return iso.slice(0, 10);
+    }
+
+    const parsed = Date.parse(trimmed);
+    if (!Number.isNaN(parsed)) {
+      return new Date(parsed).toISOString().slice(0, 10);
+    }
+  }
+
+  return null;
+};
 
 const hasValue = (value: unknown): boolean => {
   if (value === undefined || value === null) {
@@ -397,6 +472,144 @@ const appendRangeOfDates = (doc: Document, coverage: Element, data: JsonRecord |
   return true;
 };
 
+const appendTemporalRangeEntry = (doc: Document, coverage: Element, record: JsonRecord): boolean => {
+  const start = normaliseDate(record.startDate) ?? record.startDate;
+  const end = normaliseDate(record.endDate) ?? record.endDate;
+
+  if (!hasValue(start) && !hasValue(end)) {
+    return false;
+  }
+
+  const temporal = appendElement(doc, coverage, 'temporalCoverage');
+  const range = appendElement(doc, temporal, 'rangeOfDates');
+  const beginDate = appendElement(doc, range, 'beginDate');
+  appendTextElement(doc, beginDate, 'calendarDate', start);
+  removeIfEmpty(beginDate);
+  const endDate = appendElement(doc, range, 'endDate');
+  appendTextElement(doc, endDate, 'calendarDate', end);
+  removeIfEmpty(endDate);
+  removeIfEmpty(range);
+
+  if (!range.childNodes.length) {
+    range.parentNode?.removeChild(range);
+  }
+
+  if (!temporal.childNodes.length) {
+    temporal.parentNode?.removeChild(temporal);
+    return false;
+  }
+
+  return true;
+};
+
+const appendTemporalSingleEntry = (doc: Document, coverage: Element, record: JsonRecord): boolean => {
+  const date = normaliseDate(record.startDate) ?? record.startDate;
+
+  if (!hasValue(date)) {
+    return false;
+  }
+
+  const temporal = appendElement(doc, coverage, 'temporalCoverage');
+  const single = appendElement(doc, temporal, 'singleDateTime');
+  appendTextElement(doc, single, 'calendarDate', date);
+  removeIfEmpty(single);
+
+  if (!temporal.childNodes.length) {
+    temporal.parentNode?.removeChild(temporal);
+    return false;
+  }
+
+  return true;
+};
+
+const appendTemporalTextEntry = (doc: Document, coverage: Element, tagName: string, value: unknown): boolean => {
+  if (!hasValue(value)) {
+    return false;
+  }
+
+  const temporal = appendElement(doc, coverage, 'temporalCoverage');
+  appendTextElement(doc, temporal, tagName, value);
+
+  if (!temporal.childNodes.length) {
+    temporal.parentNode?.removeChild(temporal);
+    return false;
+  }
+
+  return true;
+};
+
+const appendTemporalCoverageEntries = (doc: Document, coverage: Element, list: unknown): boolean => {
+  if (!Array.isArray(list)) {
+    return false;
+  }
+
+  let appended = false;
+
+  list.forEach((entry) => {
+    if (!entry || typeof entry !== 'object') {
+      return;
+    }
+
+    const record = entry as JsonRecord;
+    if (!hasValue(record.type)) {
+      return;
+    }
+
+    const type = textFrom(record.type).toUpperCase();
+    let added = false;
+
+    switch (type) {
+      case 'DATE_RANGE':
+        added = appendTemporalRangeEntry(doc, coverage, record);
+        break;
+      case 'SINGLE_DATE':
+        added = appendTemporalSingleEntry(doc, coverage, record);
+        break;
+      case 'FORMATION_PERIOD':
+        added = appendTemporalTextEntry(doc, coverage, 'formationPeriod', record.formationPeriod);
+        break;
+      case 'LIVING_TIME_PERIOD':
+        added = appendTemporalTextEntry(doc, coverage, 'livingTimePeriod', record.livingTimePeriod);
+        break;
+      default:
+        break;
+    }
+
+    appended = appended || added;
+  });
+
+  return appended;
+};
+
+const extractTemporalValue = (list: unknown, type: string, key: string): unknown => {
+  if (!Array.isArray(list)) {
+    return undefined;
+  }
+
+  for (const entry of list) {
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+
+    const record = entry as JsonRecord;
+    if (!hasValue(record.type)) {
+      continue;
+    }
+
+    const recordType = textFrom(record.type).toUpperCase();
+    if (recordType !== type) {
+      continue;
+    }
+
+    const value = record[key];
+    if (hasValue(value)) {
+      return value;
+    }
+  }
+
+  return undefined;
+};
+
 const appendTaxonomicCoverage = (doc: Document, coverage: Element, data: JsonRecord | undefined): boolean => {
   if (!data) {
     return false;
@@ -462,11 +675,12 @@ const appendCoverage = (doc: Document, parent: Element, data: JsonRecord): void 
   }
 
   const addedGeographic = appendGeographicCoverage(doc, coverage, geographicData);
+  const addedTemporalEntries = appendTemporalCoverageEntries(doc, coverage, data.temporalCoverages);
   const addedSingle = appendSingleDateTime(doc, coverage, temporalSingle);
   const addedRange = appendRangeOfDates(doc, coverage, temporalRange);
   const addedTaxonomic = appendTaxonomicCoverage(doc, coverage, taxonomicData);
 
-  if (addedGeographic || addedSingle || addedRange || addedTaxonomic) {
+  if (addedGeographic || addedTemporalEntries || addedSingle || addedRange || addedTaxonomic) {
     parent.appendChild(coverage);
   }
 };
@@ -775,7 +989,15 @@ const appendAdditionalMetadata = (doc: Document, parent: Element, data: JsonReco
 
   const hierarchyLevel = gbifData.hierarchyLevel ?? 'dataset';
 
-  appendTextElement(doc, gbif, 'dateStamp', gbifData.dateStamp ?? data.dateStamp);
+  const dateStampCandidate = hasValue(gbifData.dateStamp)
+    ? gbifData.dateStamp
+    : hasValue(data.dateStamp)
+      ? data.dateStamp
+      : data.pubDate;
+
+  const dateStampValue = normaliseDateTime(dateStampCandidate) ?? defaultDateStamp();
+
+  appendTextElement(doc, gbif, 'dateStamp', dateStampValue);
   appendTextElement(doc, gbif, 'hierarchyLevel', hierarchyLevel);
 
   const citationAttributes = hasValue(gbifData.citation__identifier ?? data.citation__identifier)
@@ -790,8 +1012,11 @@ const appendAdditionalMetadata = (doc: Document, parent: Element, data: JsonReco
     appendTextElement(doc, gbif, 'resourceLogoUrl', resourceLogoUrl);
   }
   appendCollection(doc, gbif, data.collection ?? gbifData.collection);
-  appendTextElement(doc, gbif, 'formationPeriod', gbifData.formationPeriod ?? data.formationPeriod);
-  appendTextElement(doc, gbif, 'livingTimePeriod', gbifData.livingTimePeriod ?? data.livingTimePeriod);
+  const temporalFormation = extractTemporalValue(data.temporalCoverages, 'FORMATION_PERIOD', 'formationPeriod');
+  const temporalLiving = extractTemporalValue(data.temporalCoverages, 'LIVING_TIME_PERIOD', 'livingTimePeriod');
+
+  appendTextElement(doc, gbif, 'formationPeriod', gbifData.formationPeriod ?? data.formationPeriod ?? temporalFormation);
+  appendTextElement(doc, gbif, 'livingTimePeriod', gbifData.livingTimePeriod ?? data.livingTimePeriod ?? temporalLiving);
   appendSpecimenPreservation(doc, gbif, data.specimenPreservationMethod ?? gbifData.specimenPreservationMethod);
   appendCuratorialUnits(doc, gbif, data.jgtiCuratorialUnit ?? gbifData.jgtiCuratorialUnit);
 
@@ -836,7 +1061,7 @@ const setRootAttributes = (root: Element, data: JsonRecord): void => {
   const packageId = data.packageId ?? 'https://ipt.gbif.no/resource?id=test/v1.1';
   const system = data.system ?? 'http://gbif.org';
   const scope = data.scope ?? 'system';
-  const language = (data.xmlLang && hasValue(data.xmlLang)) ? textFrom(data.xmlLang) : 'eng';
+  const language = (data.xmlLang && hasValue(data.xmlLang)) ? textFrom(data.xmlLang) : DEFAULT_LANGUAGE;
 
   root.setAttribute('packageId', textFrom(packageId));
   root.setAttribute('system', textFrom(system));
@@ -859,9 +1084,8 @@ const buildDataset = (doc: Document, root: Element, data: JsonRecord): void => {
   const dataset = appendElement(doc, root, 'dataset');
 
   appendAlternateIdentifiers(doc, dataset, data.alternateIdentifier);
-  appendTextElement(doc, dataset, 'title', data.title, { 'xml:lang': 'eng' });
-  appendTextElement(doc, dataset, 'metadataLanguage', hasValue(data.metadataLanguage) ? data.metadataLanguage : 'eng');
-  appendTextElement(doc, dataset, 'language', hasValue(data.language) ? data.language : 'eng');
+  const titleValue = hasValue(data.title) ? data.title : DEFAULT_TITLE;
+  appendTextElement(doc, dataset, 'title', titleValue, { 'xml:lang': DEFAULT_LANGUAGE });
   const resourceContacts = asPartyArray(data.resourceContact);
   const creators = combinePartyLists(resourceContacts, asPartyArray(data.creator));
   const contacts = combinePartyLists(resourceContacts, asPartyArray(data.contact));
@@ -870,7 +1094,20 @@ const buildDataset = (doc: Document, root: Element, data: JsonRecord): void => {
   appendPartyList(doc, dataset, 'creator', creators, { defaultUserIdDirectory: 'http://orcid.org/' });
   appendPartyList(doc, dataset, 'metadataProvider', metadataProviders, { defaultUserIdDirectory: 'http://orcid.org/' });
   appendPartyList(doc, dataset, 'associatedParty', data.associatedParty, { includeRole: true, defaultUserIdDirectory: 'http://orcid.org/' });
-  appendTextElement(doc, dataset, 'pubDate', data.pubDate);
+
+  const pubDateValue = normaliseDate(data.pubDate)
+    ?? normaliseDate((data.publicationDate as unknown) ?? undefined)
+    ?? normaliseDate((data.dateStamp as unknown) ?? undefined)
+    ?? normaliseDate(
+      data.additionalMetadata && typeof data.additionalMetadata === 'object'
+        ? (data.additionalMetadata as JsonRecord).dateStamp
+        : undefined
+    )
+    ?? defaultDateStamp().slice(0, 10);
+
+  appendTextElement(doc, dataset, 'pubDate', pubDateValue);
+  const languageValue = hasValue(data.language) ? data.language : DEFAULT_LANGUAGE;
+  appendTextElement(doc, dataset, 'language', languageValue);
   appendParagraphElement(doc, dataset, 'abstract', data.abstract);
   appendKeywordSets(doc, dataset, data.keywordSet);
   appendParagraphElement(doc, dataset, 'additionalInfo', data.additionalInfo);
