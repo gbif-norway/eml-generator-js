@@ -31,7 +31,9 @@ td>p.MuiTypography-body1 { font-weight: bold; padding: 10px; background-color: #
 .resource-contact-array .MuiTypography-body2,
 .associated-party-array #tooltip-validation,
 .associated-party-array .MuiBadge-root,
-/* .associated-party-array .MuiTypography-body2 { display: none !important; } */
+.associated-party-array .MuiTypography-body2 {
+  display: none !important;
+}
 
 .resource-contact-array th.MuiTableCell-head:nth-of-type(2),
 .resource-contact-array th.MuiTableCell-head:nth-of-type(3),
@@ -47,7 +49,7 @@ td>p.MuiTypography-body1 { font-weight: bold; padding: 10px; background-color: #
   color: #d32f2f !important;
 }
 
-/* p.MuiFormHelperText-root, p.Mui-error { display: none;} */
+p.MuiFormHelperText-root, p.Mui-error { display: none;}
 .MuiTableRow-root { border-top: 10px solid white; }
 
 button.MuiTab-root { background-color: #fffbf5; border-right: 1px solid white; }
