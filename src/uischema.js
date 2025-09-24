@@ -6,9 +6,7 @@ var uischema = {
         { type: 'Control', scope: '#/properties/title' },
         { type: 'Control', scope: '#/properties/abstract', options: { multi: true } }
       ]},
-      { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/creator' }] },
-      { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/contact' }] },
-      { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/metadataProvider' }] },
+      { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/resourceContact' }] },
       { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/associatedParty' }] }
     ]},
     { type: 'Category', label: 'Coverage', elements: [

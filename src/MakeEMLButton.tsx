@@ -1,9 +1,9 @@
 import React from "react";
-import Button from '@material-ui/core/Button';
-import MakePopulatedEML from './MakePopulatedEML';
+import Button from '@mui/material/Button';
+import MakePopulatedEML, { JsonRecord } from './MakePopulatedEML';
 
 interface Props {
-  jsonformsData: object;
+  jsonformsData: JsonRecord;
 }
 
 const MakeEMLButton: React.FC<Props> = ({ jsonformsData }) => {

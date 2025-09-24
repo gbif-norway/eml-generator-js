@@ -1,6 +1,7 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import { JsonForms } from '@jsonforms/react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
+import type { Theme } from '@mui/material/styles';
 import './App.css';
 import schema from './schema.js';
 import uischema from './uischema.js';
@@ -10,12 +11,16 @@ import {
 } from '@jsonforms/material-renderers';
 import RatingControl from './RatingControl';
 import ratingControlTester from './ratingControlTester';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import MakeEMLButton from './MakeEMLButton';
 import initialDataSeed from './initialData.js';
+import type { JsonRecord } from './MakePopulatedEML';
+import TouchedTextControl, { touchedTextControlTester } from './TouchedTextControl';
+import QuietArrayControl, { quietArrayControlTester } from './QuietArrayControl';
+import type { ErrorObject } from 'ajv';
 
 
-const useStyles = makeStyles((_theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   container: {
     padding: '0em 4em 1em 4em',
     width: '100%',
@@ -47,11 +52,38 @@ const renderers = [
   ...materialRenderers,
   //register custom renderers
   { tester: ratingControlTester, renderer: RatingControl },
+  { tester: touchedTextControlTester, renderer: TouchedTextControl },
+  { tester: quietArrayControlTester, renderer: QuietArrayControl },
 ];
 
 const App = () => {
   const classes = useStyles();
-  const [jsonformsData, setJsonformsData] = useState<any>(initialData);
+  const [jsonformsData, setJsonformsData] = useState<JsonRecord>(initialData as JsonRecord);
+
+  const translateError = useCallback((error: ErrorObject): string => {
+    switch (error.keyword) {
+      case 'required':
+      case 'minItems':
+        (error as ErrorObject & { message: string }).message = '';
+        return '';
+      case 'format':
+        if (error.params && 'format' in error.params && error.params.format === 'email') {
+          return 'Enter a valid email address';
+        }
+        return 'Invalid format';
+      default:
+        return error.message ?? 'Invalid';
+    }
+  }, []);
+
+  const jsonFormsI18n = useMemo(
+    () => ({
+      locale: 'en',
+      translate: (_id: string, defaultMessage?: string) => defaultMessage ?? '',
+      translateError,
+    }),
+    [translateError]
+  );
 
   return (
     <Fragment>
@@ -66,7 +98,7 @@ const App = () => {
 
       <Grid
         container
-        justify={'center'}
+        justifyContent={'center'}
         spacing={1}
         className={classes.container}
       >
@@ -78,7 +110,8 @@ const App = () => {
               data={jsonformsData}
               renderers={renderers}
               cells={materialCells}
-              onChange={({ errors, data }) => setJsonformsData(data)}
+              i18n={jsonFormsI18n}
+              onChange={({ data }) => setJsonformsData((data ?? {}) as JsonRecord)}
             />
           </div>
           <MakeEMLButton jsonformsData={jsonformsData} />
