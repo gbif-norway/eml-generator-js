@@ -20,6 +20,8 @@ import QuietArrayControl, { quietArrayControlTester } from './QuietArrayControl'
 import LockedCategorizationStepper, { lockedCategorizationStepperTester } from './LockedCategorizationStepper';
 import type { ErrorObject } from 'ajv';
 import TemporalCoverageControl, { temporalCoverageControlTester } from './TemporalCoverageControl';
+import GeographicMapControl from './GeographicMapControl';
+import { geographicMapControlTester } from './geographicMapControlTester';
 
 
 const useStyles = makeStyles((_theme: Theme) => ({
@@ -58,6 +60,7 @@ const renderers = [
   { tester: touchedTextControlTester, renderer: TouchedTextControl },
   { tester: quietArrayControlTester, renderer: QuietArrayControl },
   { tester: temporalCoverageControlTester, renderer: TemporalCoverageControl },
+  { tester: geographicMapControlTester, renderer: GeographicMapControl },
 ];
 
 const App = () => {
@@ -79,6 +82,7 @@ const App = () => {
         return error.message ?? 'Invalid';
     }
   }, []);
+
 
   const jsonFormsI18n = useMemo(
     () => ({

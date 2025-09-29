@@ -618,6 +618,7 @@ const appendTaxonomicCoverage = (doc: Document, coverage: Element, data: JsonRec
   const taxonomic = doc.createElement('taxonomicCoverage');
   appendTextElement(doc, taxonomic, 'generalTaxonomicCoverage', data.generalTaxonomicCoverage);
 
+  let hasClassifications = false;
   if (Array.isArray(data.taxonomicClassification)) {
     data.taxonomicClassification.forEach((entry) => {
       if (!entry || typeof entry !== 'object') {
@@ -636,10 +637,13 @@ const appendTaxonomicCoverage = (doc: Document, coverage: Element, data: JsonRec
       appendTextElement(doc, classification, 'taxonRankValue', record.taxonRankValue);
       appendTextElement(doc, classification, 'commonName', record.commonName);
       removeIfEmpty(classification);
+      hasClassifications = true;
     });
   }
 
-  if (!taxonomic.childNodes.length) {
+
+  // Only add the taxonomic coverage if we have either general coverage or classifications
+  if (!hasValue(data.generalTaxonomicCoverage) && !hasClassifications) {
     return false;
   }
 
@@ -746,7 +750,7 @@ const appendMethods = (doc: Document, parent: Element, data: JsonRecord): void =
   }
 };
 
-const appendProject = (doc: Document, parent: Element, projectData: JsonRecord | undefined): void => {
+const appendProject = (doc: Document, parent: Element, projectData: JsonRecord | undefined, resourceContacts: JsonRecord[] = []): void => {
   if (!projectData) {
     return;
   }
@@ -772,6 +776,7 @@ const appendProject = (doc: Document, parent: Element, projectData: JsonRecord |
 
   appendTextElement(doc, project, 'title', projectData.title);
 
+  let hasPersonnel = false;
   if (Array.isArray(projectData.personnel)) {
     projectData.personnel.forEach((entry) => {
       if (!entry || typeof entry !== 'object') {
@@ -795,7 +800,22 @@ const appendProject = (doc: Document, parent: Element, projectData: JsonRecord |
 
       appendTextElement(doc, personnel, 'role', record.role);
       removeIfEmpty(personnel);
+      hasPersonnel = true;
     });
+  }
+
+  // If we have abstract but no personnel, use the first resource contact
+  if (hasValue(projectData.abstract) && !hasPersonnel && resourceContacts.length > 0) {
+    const firstContact = resourceContacts[0];
+    const personnel = appendElement(doc, project, 'personnel');
+    appendIndividualName(doc, personnel, firstContact);
+
+    if (hasValue(firstContact.userId)) {
+      const directory = getDirectory(firstContact, 'http://orcid.org/');
+      appendTextElement(doc, personnel, 'userId', firstContact.userId, directory ? { directory } : {});
+    }
+
+    appendTextElement(doc, personnel, 'role', 'Principal Investigator');
   }
 
   appendParagraphElement(doc, project, 'abstract', projectData.abstract);
@@ -1134,7 +1154,7 @@ const buildDataset = (doc: Document, root: Element, data: JsonRecord): void => {
   appendPartyList(doc, dataset, 'contact', contacts, { defaultUserIdDirectory: 'http://orcid.org/' });
   appendMethods(doc, dataset, data);
   const projectData = data.project && typeof data.project === 'object' ? (data.project as JsonRecord) : undefined;
-  appendProject(doc, dataset, projectData);
+  appendProject(doc, dataset, projectData, resourceContacts);
   removeIfEmpty(dataset);
 };
 
