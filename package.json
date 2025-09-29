@@ -34,7 +34,7 @@
   "scripts": {
     "predeploy": "npm run build && cp -r build docs",
     "deploy": "gh-pages -d docs",
-    "deploy:docker": "docker-compose --profile deploy run --rm deploy",
+    "deploy:docker": "docker compose --profile deploy run --rm deploy",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

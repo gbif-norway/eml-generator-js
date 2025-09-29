@@ -35,4 +35,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Install git for gh-pages deployment
 RUN apk add --no-cache git
+# Configure git for deployment (can be overridden with environment variables)
+RUN git config --global user.email "deploy@github.com" && \
+    git config --global user.name "GitHub Pages Deploy"
 CMD ["npm", "run", "deploy"]

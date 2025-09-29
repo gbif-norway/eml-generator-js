@@ -28,5 +28,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=production
+      - GIT_USER_NAME=${GIT_USER_NAME:-GitHub Pages Deploy}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-deploy@github.com}
     profiles:
       - deploy
