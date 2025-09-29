@@ -1,10 +1,54 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Rectangle, useMap, useMapEvents } from 'react-leaflet';
+import React, { useEffect, useState, useRef } from 'react';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import './locationfilter.css';
 import { ControlProps } from '@jsonforms/core';
 import { withJsonFormsControlProps } from '@jsonforms/react';
 import { Box, Typography, TextField, Grid, Button } from '@mui/material';
+
+// Load the location filter code
+import './gbif-locationfilter.js';
+
+// Extend Leaflet types to include LocationFilter
+declare global {
+  namespace L {
+    interface LocationFilter {
+      addTo(map: L.Map): LocationFilter;
+      remove(): void;
+      enable(): void;
+      disable(): void;
+      setBounds(bounds: L.LatLngBounds): void;
+      getBounds(): L.LatLngBounds;
+      on(event: string, handler: (e: any) => void): void;
+      off(event: string, handler: (e: any) => void): void;
+      fire(event: string, data?: any): void;
+    }
+    
+    interface LocationFilterOptions {
+      enable?: boolean;
+      enableButton?: boolean | { enableText: string; disableText: string };
+      adjustButton?: boolean | { text: string };
+      bounds?: L.LatLngBounds;
+      buttonPosition?: string;
+    }
+    
+    namespace Control {
+      class LocationFilter {
+        constructor(options?: LocationFilterOptions);
+        addTo(map: L.Map): LocationFilter;
+        remove(): void;
+        enable(): void;
+        disable(): void;
+        setBounds(bounds: L.LatLngBounds): void;
+        getBounds(): L.LatLngBounds;
+        on(event: string, handler: (e: any) => void): void;
+        off(event: string, handler: (e: any) => void): void;
+        fire(event: string, data?: any): void;
+      }
+    }
+  }
+}
 
 // Fix for default markers in react-leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -22,76 +66,85 @@ interface Bounds {
   west: number;
 }
 
-// Component to handle interactive rectangle selection
-const InteractiveRectangle: React.FC<{
+// Component to handle the LocationFilter integration
+const LocationFilterHandler: React.FC<{
   bounds: Bounds;
   onBoundsChange: (bounds: Bounds) => void;
-  onMapClick: (lat: number, lng: number) => void;
-}> = ({ bounds, onBoundsChange, onMapClick }) => {
+}> = ({ bounds, onBoundsChange }) => {
   const map = useMap();
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState<L.LatLng | null>(null);
-  const [currentBounds, setCurrentBounds] = useState<L.LatLngBounds | null>(null);
+  const locationFilterRef = useRef<any>(null);
 
-  // Handle map clicks to create initial selection
-  useMapEvents({
-    click: (e) => {
-      if (!isDragging) {
-        onMapClick(e.latlng.lat, e.latlng.lng);
-      }
-    },
-    mousedown: (e) => {
-      if (e.originalEvent.button === 0) { // Left mouse button
-        setIsDragging(true);
-        setDragStart(e.latlng);
-      }
-    },
-    mousemove: (e) => {
-      if (isDragging && dragStart) {
-        const newBounds = L.latLngBounds(dragStart, e.latlng);
-        setCurrentBounds(newBounds);
-      }
-    },
-    mouseup: (e) => {
-      if (isDragging && dragStart) {
-        const finalBounds = L.latLngBounds(dragStart, e.latlng);
-        const newBounds: Bounds = {
-          north: finalBounds.getNorth(),
-          south: finalBounds.getSouth(),
-          east: finalBounds.getEast(),
-          west: finalBounds.getWest()
-        };
-        onBoundsChange(newBounds);
-        setCurrentBounds(null);
-        setIsDragging(false);
-        setDragStart(null);
-      }
-    }
-  });
-
-  // Update map view when bounds change
   useEffect(() => {
+    // Initialize the LocationFilter with default bounds if none are set
+    let initialBounds;
     if (bounds.north !== 0 || bounds.south !== 0 || bounds.east !== 0 || bounds.west !== 0) {
-      const leafletBounds = L.latLngBounds(
-        [bounds.south, bounds.west],
-        [bounds.north, bounds.east]
+      initialBounds = L.latLngBounds([bounds.south, bounds.west], [bounds.north, bounds.east]);
+    } else {
+      // Set default bounds to cover all of Norway
+      initialBounds = L.latLngBounds(
+        [58.0, 4.0],   // Southwest corner (South Norway, West coast)
+        [71.0, 31.0]   // Northeast corner (North Norway, East border)
       );
-      map.fitBounds(leafletBounds);
     }
-  }, [bounds, map]);
 
-  // Show current dragging bounds
-  if (currentBounds) {
-    return (
-      <Rectangle
-        bounds={currentBounds}
-        color="blue"
-        weight={2}
-        fillOpacity={0.1}
-        dashArray="5, 5"
-      />
-    );
-  }
+    const locationFilter = new (L as any).LocationFilter({
+      enable: true,
+      enableButton: false,
+      adjustButton: false,
+      bounds: initialBounds
+    });
+
+
+    // Add to map using the proper method
+    map.addLayer(locationFilter);
+    locationFilterRef.current = locationFilter;
+
+    // Listen for changes
+    const handleChange = (e: any) => {
+      const filterBounds = e.bounds;
+      const newBounds: Bounds = {
+        north: filterBounds.getNorth(),
+        south: filterBounds.getSouth(),
+        east: filterBounds.getEast(),
+        west: filterBounds.getWest()
+      };
+      onBoundsChange(newBounds);
+    };
+
+    locationFilter.on('change', handleChange);
+
+    // If we initialized with default bounds, update the state
+    if (bounds.north === 0 && bounds.south === 0 && bounds.east === 0 && bounds.west === 0) {
+      const defaultBounds: Bounds = {
+        north: initialBounds.getNorth(),
+        south: initialBounds.getSouth(),
+        east: initialBounds.getEast(),
+        west: initialBounds.getWest()
+      };
+      onBoundsChange(defaultBounds);
+    }
+
+    // Cleanup function
+    return () => {
+      if (locationFilterRef.current) {
+        locationFilterRef.current.off('change', handleChange);
+        map.removeLayer(locationFilterRef.current);
+      }
+    };
+  }, [map, onBoundsChange, bounds.north, bounds.south, bounds.east, bounds.west]);
+
+  // Update LocationFilter when bounds change from external source
+  useEffect(() => {
+    if (locationFilterRef.current) {
+      if (bounds.north !== 0 || bounds.south !== 0 || bounds.east !== 0 || bounds.west !== 0) {
+        const leafletBounds = L.latLngBounds(
+          [bounds.south, bounds.west],
+          [bounds.north, bounds.east]
+        );
+        locationFilterRef.current.setBounds(leafletBounds);
+      }
+    }
+  }, [bounds.north, bounds.south, bounds.east, bounds.west]);
 
   return null;
 };
@@ -140,30 +193,7 @@ const GeographicMapControl: React.FC<ControlProps> = (props) => {
     handleChange(path, newData);
   };
 
-  const handleMapClick = useCallback((lat: number, lng: number) => {
-    // If no bounds are set, create initial bounds around the clicked point
-    if (bounds.north === 0 && bounds.south === 0 && bounds.east === 0 && bounds.west === 0) {
-      const newBounds: Bounds = {
-        north: lat + 0.1,
-        south: lat - 0.1,
-        east: lng + 0.1,
-        west: lng - 0.1
-      };
-      setBounds(newBounds);
-      
-      const newData = {
-        ...data,
-        northBoundingCoordinate: newBounds.north.toString(),
-        southBoundingCoordinate: newBounds.south.toString(),
-        eastBoundingCoordinate: newBounds.east.toString(),
-        westBoundingCoordinate: newBounds.west.toString()
-      };
-      
-      handleChange(path, newData);
-    }
-  }, [bounds, data, handleChange, path]);
-
-  const handleBoundsChange = useCallback((newBounds: Bounds) => {
+  const handleBoundsChange = (newBounds: Bounds) => {
     setBounds(newBounds);
     
     const newData = {
@@ -175,7 +205,7 @@ const GeographicMapControl: React.FC<ControlProps> = (props) => {
     };
     
     handleChange(path, newData);
-  }, [data, handleChange, path]);
+  };
 
 
   const resetToWorld = () => {
@@ -224,7 +254,7 @@ const GeographicMapControl: React.FC<ControlProps> = (props) => {
         Geographic Coverage
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Click on the map to set initial bounds, or drag to create a selection area. You can also adjust coordinates manually.
+        Use the draggable rectangle on the map to select your geographic area. Drag the corners to resize or drag the center to move the selection.
       </Typography>
       
       {/* Coordinate Input Fields */}
@@ -298,23 +328,9 @@ const GeographicMapControl: React.FC<ControlProps> = (props) => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           
-          {/* Show rectangle if bounds are set */}
-          {bounds.north !== 0 || bounds.south !== 0 || bounds.east !== 0 || bounds.west !== 0 ? (
-            <Rectangle
-              bounds={[
-                [bounds.south, bounds.west],
-                [bounds.north, bounds.east]
-              ]}
-              color="red"
-              weight={2}
-              fillOpacity={0.1}
-            />
-          ) : null}
-          
-          <InteractiveRectangle 
+          <LocationFilterHandler 
             bounds={bounds} 
             onBoundsChange={handleBoundsChange}
-            onMapClick={handleMapClick}
           />
         </MapContainer>
       </Box>

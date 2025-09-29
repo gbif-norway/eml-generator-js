@@ -1,4 +1,4 @@
-# EML generator
+# EML Generator
 
 A React-based EML (Ecological Metadata Language) generator with an interactive map for geographic coverage selection.
 
@@ -11,7 +11,38 @@ A React-based EML (Ecological Metadata Language) generator with an interactive m
 
 ## Running the Application
 
-Should run using `docker-compose run web`, and then `npm start`. If you want to use a proxy (if you have multiple docker images running for example), you can use https://github.com/gbif-norway/nginx-proxy and fill in `0.0.0.0    eml.localhost` or similar in your hosts file.
+### Development
+```bash
+docker-compose run web
+npm start
+```
+
+If you want to use a proxy (if you have multiple docker images running for example), you can use https://github.com/gbif-norway/nginx-proxy and fill in `0.0.0.0    eml.localhost` or similar in your hosts file.
+
+### Production Build
+```bash
+docker-compose up web-prod
+```
+This will serve the production build on port 8080.
+
+### GitHub Pages Deployment
+
+#### Option 1: Direct deployment (requires Node.js locally)
+```bash
+npm run deploy
+```
+
+#### Option 2: Docker deployment (no local Node.js required)
+```bash
+npm run deploy:docker
+```
+
+Both methods will:
+1. Build the React application
+2. Copy the build to the `docs/` folder
+3. Deploy to GitHub Pages using the `gh-pages` package
+
+The site will be available at: https://gbif-norway.github.io/eml-generator-js
 
 ## Geographic Coverage Map
 
@@ -29,4 +60,10 @@ The application includes an interactive map component for selecting geographic c
 - React 18
 - JsonForms for form handling
 - Leaflet and React-Leaflet for map functionality
-- Material-UI for components 
+- Material-UI for components
+
+## Docker Services
+
+- `web`: Development server with hot reload
+- `web-prod`: Production build served with nginx
+- `deploy`: GitHub Pages deployment (use with `--profile deploy`)

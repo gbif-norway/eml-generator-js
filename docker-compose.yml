@@ -18,3 +18,15 @@ services:
       target: production
     ports:
       - '8080:80'
+
+  deploy:
+    build:
+      context: .
+      target: deploy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+    profiles:
+      - deploy
