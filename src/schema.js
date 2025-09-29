@@ -44,6 +44,8 @@ var schema = {
     },
     geographicCoverage: {
       type: 'object',
+      title: 'Geographic Coverage',
+      description: 'Define the geographic extent of your dataset using the interactive map or coordinate inputs',
       properties: {
         westBoundingCoordinate:   { type: 'string', title: 'West' },
         eastBoundingCoordinate:   { type: 'string', title: 'East' },
@@ -53,17 +55,20 @@ var schema = {
     },
     taxonomicCoverage: {
       type: 'object',
+      required: ['taxonomicClassification'],
       properties: {
-        generalTaxonomicCoverage: { type: 'string' },
+        generalTaxonomicCoverage: { type: 'string', title: 'General taxonomic coverage' },
         taxonomicClassification: {
           type: 'array',
-          title: 'Specific taxon list (optional)',
+          title: 'Specific taxon list (required)',
+          minItems: 1,
           items: {
             type: 'object',
+            required: ['taxonRankName', 'taxonRankValue'],
             properties: {
-              taxonRankName: { type: 'string', title: 'Rank', enum: ['domain', 'kingdom', 'subkingdom', 'superphylum', 'phylum', 'subphylum', 'superclass', 'class', 'subclass', 'supercohort', 'cohort', 'subcohort', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily', 'family', 'subfamily', 'tribe', 'subtribe', 'supragenericname', 'genus', 'subgenus', 'section', 'subsection', 'series', 'subseries', 'speciesAggregate', 'infragenericname', 'species', 'subspecificAggregate', 'infraspecificname', 'subspecies', 'infrasubspecificname', 'variety', 'subvariety', 'form', 'subform', 'pathovar', 'biovar', 'chemovar', 'morphovar', 'phagovar', 'serovar', 'chemoform', 'formaspecialis', 'cultivarGroup', 'cultivar', 'strain', 'informal', 'unranked'] },
-              taxonRankValue: { type: 'string', title: 'Scientific name' },
-              commonName: { type: 'string' },
+              taxonRankName: { type: 'string', title: 'Rank*', enum: ['domain', 'kingdom', 'subkingdom', 'superphylum', 'phylum', 'subphylum', 'superclass', 'class', 'subclass', 'supercohort', 'cohort', 'subcohort', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily', 'family', 'subfamily', 'tribe', 'subtribe', 'supragenericname', 'genus', 'subgenus', 'section', 'subsection', 'series', 'subseries', 'speciesAggregate', 'infragenericname', 'species', 'subspecificAggregate', 'infraspecificname', 'subspecies', 'infrasubspecificname', 'variety', 'subvariety', 'form', 'subform', 'pathovar', 'biovar', 'chemovar', 'morphovar', 'phagovar', 'serovar', 'chemoform', 'formaspecialis', 'cultivarGroup', 'cultivar', 'strain', 'informal', 'unranked'] },
+              taxonRankValue: { type: 'string', title: 'Scientific name*' },
+              commonName: { type: 'string', title: 'Common name' },
             }
           }
         }

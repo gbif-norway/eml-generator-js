@@ -1,0 +1,60 @@
+/* Location Filter CSS - Based on GBIF implementation */
+
+.location-filter.button-container {
+    background: white;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    padding: 5px;
+}
+
+.location-filter.button-container.enabled {
+    background: #f4f4f4;
+}
+
+.location-filter.button-container a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    line-height: 1.45;
+    text-decoration: none;
+    color: black;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin: 1px;
+    cursor: pointer;
+}
+
+.location-filter.button-container a:hover {
+    background: #f4f4f4;
+    border-color: #999;
+}
+
+.location-filter.move-marker {
+    background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTYuNSAwQzcuMzI4NDMgMCA4IDAuNjcxNTczIDggMS41VjMuNUw5LjUgM0M5Ljc3NjE0IDMgMTAgMy4yMjM4NiAxMCAzLjVWOS41QzEwIDkuNzc2MTQgOS43NzYxNCAxMCA5LjUgMTBMOCA5LjVWMTEuNUw4IDEyQzggMTIuODI4NCA3LjMyODQzIDEzLjUgNi41IDEzLjVDNS42NzE1NyAxMy41IDUgMTIuODI4NCA1IDEyVjkuNUwzLjUgMTBDMy4yMjM4NiAxMCAzIDkuNzc2MTQgMyA5LjVWMy41QzMgMy4yMjM4NiAzLjIyMzg2IDMgMy41IDNMNSA0LjVWMS41QzUgMC42NzE1NzMgNS42NzE1NyAwIDYuNSAwWiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4K') no-repeat center center;
+    background-size: 13px 13px;
+    cursor: move;
+}
+
+.location-filter.resize-marker {
+    background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCAxMyAxMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAgMEgxM1YxMkgwVjBaIiBmaWxsPSIjZmZmIi8+CjxwYXRoIGQ9Ik0wIDBIMTNWMTJIMFYwWiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEiLz4KPHBhdGggZD0iTTMgM0gxMFY5SDNWM1oiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==') no-repeat center center;
+    background-size: 13px 12px;
+    cursor: nw-resize;
+}
+
+.location-filter.resize-marker:nth-child(2) {
+    cursor: ne-resize;
+}
+
+.location-filter.resize-marker:nth-child(3) {
+    cursor: sw-resize;
+}
+
+.location-filter.resize-marker:nth-child(4) {
+    cursor: se-resize;
+}

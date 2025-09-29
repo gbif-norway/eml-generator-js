@@ -11,14 +11,7 @@ var uischema = {
       { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/associatedParty' }] }
     ]},
     { type: 'Category', label: 'Coverage', elements: [
-      { type: 'Group', label: 'Geographic Coverage', elements: [
-        { type: 'HorizontalLayout', elements: [
-          { type: 'Control', scope: '#/properties/geographicCoverage/properties/northBoundingCoordinate' },
-          { type: 'Control', scope: '#/properties/geographicCoverage/properties/southBoundingCoordinate' },
-          { type: 'Control', scope: '#/properties/geographicCoverage/properties/eastBoundingCoordinate' },
-          { type: 'Control', scope: '#/properties/geographicCoverage/properties/westBoundingCoordinate' }
-        ] }
-      ]},
+      { type: 'Control', scope: '#/properties/geographicCoverage' },
       { type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/taxonomicCoverage' }] },
       //{ type: 'HorizontalLayout', elements: [{ type: 'Control', scope: '#/properties/temporalCoverage' }] },
       { type: 'Group', label: 'Temporal Coverage', elements: [
