@@ -1,5 +1,6 @@
 services:
-  web:
+  # Development service - what you use for daily development
+  dev:
     build:
       context: .
       target: dev
@@ -11,14 +12,10 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+    profiles:
+      - dev
 
-  web-prod:
-    build:
-      context: .
-      target: production
-    ports:
-      - '8080:80'
-
+  # GitHub Pages deployment - only when you want to deploy
   deploy:
     build:
       context: .
