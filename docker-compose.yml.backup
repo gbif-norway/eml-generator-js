@@ -1,0 +1,31 @@
+services:
+  # Development service - what you use for daily development
+  dev:
+    build:
+      context: .
+      target: dev
+    ports:
+      - '3001:3000'
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+    profiles:
+      - dev
+
+  # GitHub Pages deployment - only when you want to deploy
+  deploy:
+    build:
+      context: .
+      target: deploy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+      - GIT_USER_NAME=${GIT_USER_NAME:-GitHub Pages Deploy}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-deploy@github.com}
+    profiles:
+      - deploy
