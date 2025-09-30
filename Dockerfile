@@ -4,7 +4,7 @@ WORKDIR /app
 # Install dependencies only when package files change
 FROM base AS deps
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci --silent
 
 # Development image
 FROM base AS dev
@@ -16,9 +16,8 @@ CMD ["npm", "start"]
 
 # Production build stage
 FROM base AS build
-ENV NODE_ENV=development
-COPY package.json package-lock.json ./
-RUN npm install
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
@@ -33,9 +32,7 @@ FROM base AS deploy
 ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Install git for gh-pages deployment
-RUN apk add --no-cache git
-# Configure git for deployment (can be overridden with environment variables)
-RUN git config --global user.email "deploy@github.com" && \
+RUN apk add --no-cache git && \
+    git config --global user.email "deploy@github.com" && \
     git config --global user.name "GitHub Pages Deploy"
 CMD ["npm", "run", "deploy"]

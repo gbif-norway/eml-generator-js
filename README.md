@@ -11,30 +11,43 @@ A React-based EML (Ecological Metadata Language) generator with an interactive m
 
 ## Running the Application
 
-### Development
+### Development (Docker-first workflow)
 ```bash
-docker-compose run web
-npm start
+# Start development server with hot reload
+docker compose up web
+# or
+npm run start:docker
+
+# Build all Docker images
+docker compose build
+# or
+npm run build:docker
 ```
 
 If you want to use a proxy (if you have multiple docker images running for example), you can use https://github.com/gbif-norway/nginx-proxy and fill in `0.0.0.0    eml.localhost` or similar in your hosts file.
 
 ### Production Build
 ```bash
-docker-compose up web-prod
+docker compose up web-prod
 ```
 This will serve the production build on port 8080.
 
 ### GitHub Pages Deployment
 
-#### Option 1: Direct deployment (requires Node.js locally)
+#### Docker deployment (recommended for Docker-first workflow)
 ```bash
-npm run deploy
+# Build the deploy image
+docker compose build deploy
+
+# Deploy to GitHub Pages
+docker compose --profile deploy run --rm deploy
+# or
+npm run deploy:docker
 ```
 
-#### Option 2: Docker deployment (no local Node.js required)
+#### Direct deployment (if you have Node.js locally)
 ```bash
-npm run deploy:docker
+npm run deploy
 ```
 
 Both methods will:
