@@ -75,6 +75,12 @@ const LocationFilterHandler: React.FC<{
   const locationFilterRef = useRef<any>(null);
 
   useEffect(() => {
+    // Check if LocationFilter is available
+    if (!(L as any).LocationFilter) {
+      console.error('LocationFilter not available. Check if gbif-locationfilter is properly loaded.');
+      return;
+    }
+
     // Initialize the LocationFilter with default bounds if none are set
     let initialBounds;
     if (bounds.north !== 0 || bounds.south !== 0 || bounds.east !== 0 || bounds.west !== 0) {
@@ -87,6 +93,7 @@ const LocationFilterHandler: React.FC<{
       );
     }
 
+    console.log('Creating LocationFilter with bounds:', initialBounds);
     const locationFilter = new (L as any).LocationFilter({
       enable: true,
       enableButton: false,
