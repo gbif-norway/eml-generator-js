@@ -44,10 +44,6 @@ const useStyles = makeStyles((_theme: Theme) => ({
     margin: 'auto',
     display: 'block',
   },
-  demoform: {
-    margin: 'auto',
-    padding: '1rem',
-  }
 }));
 
 const initialData = initialDataSeed;
@@ -111,7 +107,7 @@ const App = () => {
         className={classes.container}
       >
         <Grid item sm={12}>
-          <div className={classes.demoform}>
+          <div className="demoform">
             <JsonForms
               schema={schema}
               uischema={uischema}
