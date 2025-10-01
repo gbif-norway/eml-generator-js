@@ -56,7 +56,7 @@ button.MuiTab-root { background-color: #fffbf5; border-right: 1px solid white; }
 button.MuiTab-root:hover { background-color: #fff3e3 }
 .MuiCardContent-root .MuiCard-root .MuiCardHeader-root .MuiTypography-h5 { font-size: 0.8em; }
 
-.makeStyles-demoform-5>div>div.MuiGrid-container>div.MuiGrid-item>h6.MuiTypography-h6{ padding: 15px; margin: 15px 0; background-color: #ffffe9; font-size: 0.8em !important; }
+.demoform>div>div.MuiGrid-container>div.MuiGrid-item>h6.MuiTypography-h6{ padding: 15px; margin: 15px 0; background-color: #ffffe9; font-size: 0.8em !important; }
 
 .demoform {
   margin: auto;
