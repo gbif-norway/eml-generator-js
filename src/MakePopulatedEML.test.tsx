@@ -33,6 +33,7 @@ describe('MakePopulatedEML', () => {
     expect(nodeText(doc.documentElement, 'dataset > title')).toBe('Untitled dataset');
     expect(doc.querySelector('dataset > metadataLanguage')).toBeNull();
     expect(nodeText(doc.documentElement, 'dataset > language')).toBe('eng');
+    expect(doc.querySelector('dataset > intellectualRights')).toBeNull();
     const pubDate = nodeText(doc.documentElement, 'dataset > pubDate');
     expect(pubDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     const dateStamp = nodeText(doc.documentElement, 'additionalMetadata gbif > dateStamp');
@@ -51,6 +52,17 @@ describe('MakePopulatedEML', () => {
     const abstract = doc.querySelectorAll('dataset > abstract > para');
     expect(abstract.length).toBe(2);
     expect(Array.from(abstract).map((node) => node.textContent)).toEqual(['First paragraph', 'Second paragraph']);
+  });
+
+  it('writes intellectual rights from the supplied license or statement', () => {
+    const license = 'http://creativecommons.org/licenses/by-nc/4.0/';
+    const doc = parse(MakePopulatedEML({ intellectualRights: license }));
+    expect(nodeText(doc.documentElement, 'dataset > intellectualRights > para')).toBe(license);
+
+    const statement = parse(MakePopulatedEML({ intellectualRights: 'Copyright A & B\nContact the owner for permission.' }));
+    expect(Array.from(statement.querySelectorAll('dataset > intellectualRights > para')).map((node) => node.textContent))
+      .toEqual(['Copyright A & B', 'Contact the owner for permission.']);
+    expect(statement.querySelector('parsererror')).toBeNull();
   });
 
   it('builds party lists and omits missing child elements', () => {

@@ -235,6 +235,11 @@ var schema = {
       properties: { description: { type: 'string', title: 'Maintenance' } }
     },
     additionalInfo: { type: 'string' },
+    intellectualRights: {
+      type: 'string',
+      title: 'Intellectual rights / license',
+      description: 'Enter the dataset license URL or a rights statement, for example http://creativecommons.org/licenses/by-nc/4.0/'
+    },
     alternateIdentifier: { type: 'array', title: 'Alternative Identifier(s)', items: { type: 'string' } }
   },
   //required: ['title', 'abstract', 'creator', 'contact']

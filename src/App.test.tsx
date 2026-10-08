@@ -9,6 +9,11 @@ jest.mock('@jsonforms/material-renderers', () => ({
   materialRenderers: []
 }));
 
+jest.mock('./GeographicMapControl', () => ({
+  __esModule: true,
+  default: () => null
+}));
+
 import App from './App';
 import { createRoot } from 'react-dom/client';
 

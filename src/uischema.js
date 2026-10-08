@@ -49,6 +49,7 @@ var uischema = {
       { type: 'Control', scope: '#/properties/purpose' },
       { type: 'Control', scope: '#/properties/maintenance/properties/description' },
       { type: 'Control', scope: '#/properties/additionalInfo' },
+      { type: 'Control', scope: '#/properties/intellectualRights', options: { multi: true } },
       { type: 'Control', scope: '#/properties/alternateIdentifier' }
     ] }
   ],

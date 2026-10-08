@@ -1,6 +1,6 @@
 # Docker Development Workflow
 
-This project uses Docker for all development and deployment. The setup has been streamlined to make development easier.
+Docker can run the development server and prepare the static files for GitHub Pages.
 
 ## Quick Start
 
@@ -12,18 +12,20 @@ docker compose --profile dev up --build
 # Access your app at: http://localhost:3001
 ```
 
-### Deploy to GitHub Pages
+### Build GitHub Pages files
 ```bash
-# Deploy to GitHub Pages
-docker compose --profile deploy up --build
+# Rebuild docs/ from the React source
+docker compose --profile deploy run --build --rm deploy
 ```
+
+GitHub Pages serves `docs/` from `master`. Commit and push the updated files to publish them.
 
 ## Services Overview
 
 | Service | Purpose | Port | When to Use |
 |---------|---------|------|-------------|
 | `dev` | Development with hot reload | 3001 | Daily development |
-| `deploy` | GitHub Pages deployment | - | Deploy to GitHub Pages |
+| `deploy` | Build GitHub Pages files into `docs/` | - | Before committing site changes |
 
 ## Common Commands
 
@@ -31,8 +33,8 @@ docker compose --profile deploy up --build
 # Start development
 docker compose --profile dev up --build
 
-# Deploy to GitHub Pages
-docker compose --profile deploy up --build
+# Build GitHub Pages files
+docker compose --profile deploy run --build --rm deploy
 
 # Stop all services
 docker compose down

@@ -34,26 +34,30 @@ This will serve the production build on port 8080.
 
 ### GitHub Pages Deployment
 
-#### Docker deployment (recommended for Docker-first workflow)
+GitHub Pages publishes the `docs/` directory on the `master` branch. Source changes
+only appear on the site after the generated files in `docs/` are committed and pushed.
+
+#### Build the Pages files with Docker
 ```bash
 # Build the deploy image
 docker compose build deploy
 
-# Deploy to GitHub Pages
+# Build the site into docs/
 docker compose --profile deploy run --rm deploy
 # or
 npm run deploy:docker
 ```
 
-#### Direct deployment (if you have Node.js locally)
+#### Build the Pages files with local Node.js
 ```bash
 npm run deploy
 ```
 
 Both methods will:
 1. Build the React application
-2. Copy the build to the `docs/` folder
-3. Deploy to GitHub Pages using the `gh-pages` package
+2. Replace the generated files in `docs/`
+
+Commit and push the updated `docs/` directory to `master` to publish the site.
 
 The site will be available at: https://gbif-norway.github.io/eml-generator-js
 
@@ -79,4 +83,4 @@ The application includes an interactive map component for selecting geographic c
 
 - `web`: Development server with hot reload
 - `web-prod`: Production build served with nginx
-- `deploy`: GitHub Pages deployment (use with `--profile deploy`)
+- `deploy`: Builds the files in `docs/` for GitHub Pages (use with `--profile deploy`)

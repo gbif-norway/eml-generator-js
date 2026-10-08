@@ -16,7 +16,6 @@
     "@types/node": "^20.12.7",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
-    "gh-pages": "^6.0.0",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -30,8 +29,8 @@
     "start-server-and-test": "^2.0.3"
   },
   "scripts": {
-    "predeploy": "npm run build && cp -r build docs",
-    "deploy": "echo Done",
+    "predeploy": "npm run build && rm -rf docs && cp -R build docs",
+    "deploy": "echo 'Commit and push the updated docs directory to publish GitHub Pages'",
     "deploy:docker": "docker compose --profile deploy run --rm deploy",
     "start": "react-scripts start",
     "start:docker": "docker compose up web",

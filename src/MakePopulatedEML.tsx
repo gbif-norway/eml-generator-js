@@ -1056,22 +1056,6 @@ const appendAdditionalMetadata = (doc: Document, parent: Element, data: JsonReco
   }
 };
 
-const appendIntellectualRights = (doc: Document, parent: Element): void => {
-  const rights = appendElement(doc, parent, 'intellectualRights');
-  const paragraph = doc.createElement('para');
-  paragraph.appendChild(doc.createTextNode('This work is licensed under a '));
-
-  const ulink = doc.createElement('ulink');
-  ulink.setAttribute('url', 'http://creativecommons.org/licenses/by/4.0/legalcode');
-  const citeTitle = doc.createElement('citetitle');
-  citeTitle.textContent = 'Creative Commons Attribution (CC-BY) 4.0 License';
-  ulink.appendChild(citeTitle);
-
-  paragraph.appendChild(ulink);
-  paragraph.appendChild(doc.createTextNode('.'));
-  rights.appendChild(paragraph);
-};
-
 const setRootAttributes = (root: Element, data: JsonRecord): void => {
   root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:dc', 'http://purl.org/dc/terms/');
   root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', XSI_NS);
@@ -1131,7 +1115,7 @@ const buildDataset = (doc: Document, root: Element, data: JsonRecord): void => {
   appendParagraphElement(doc, dataset, 'abstract', data.abstract);
   appendKeywordSets(doc, dataset, data.keywordSet);
   appendParagraphElement(doc, dataset, 'additionalInfo', data.additionalInfo);
-  appendIntellectualRights(doc, dataset);
+  appendParagraphElement(doc, dataset, 'intellectualRights', data.intellectualRights);
   appendDistribution(doc, dataset, data.online);
   appendCoverage(doc, dataset, data);
   appendParagraphElement(doc, dataset, 'purpose', data.purpose);

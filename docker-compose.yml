@@ -15,7 +15,7 @@ services:
     profiles:
       - dev
 
-  # GitHub Pages deployment - only when you want to deploy
+  # Build the files that GitHub Pages serves from docs/
   deploy:
     build:
       context: .
@@ -25,7 +25,5 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=production
-      - GIT_USER_NAME=${GIT_USER_NAME:-GitHub Pages Deploy}
-      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-deploy@github.com}
     profiles:
       - deploy
